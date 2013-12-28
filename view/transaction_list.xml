@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tree string="Transactions">
+    <field name="date"/>
+    <field name="uuid"/>
+    <field name="party"/>
+    <field name="amount"/>
+    <field name="currency"/>
+    <field name="gateway"/>
+    <field name="state"/>
+</tree>

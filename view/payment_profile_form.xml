@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<form string="Payment Profile">
+    <label name="address"/>
+    <field name="address" xfill="1"/>
+    <label name="party"/>
+    <field name="party"/>
+    <label name="gateway"/>
+    <field name="gateway"/>
+    <label name="provider_reference"/>
+    <field name="provider_reference"/>
+    <group colspan="4" col="6" id="card_data">
+        <label name="last_4_digits"/>
+        <field name="last_4_digits"/>
+        <label name="expiry_month"/>
+        <field name="expiry_month"/>
+        <label name="expiry_year"/>
+        <field name="expiry_year"/>
+    </group>
+</form>
