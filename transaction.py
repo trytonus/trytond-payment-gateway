@@ -803,7 +803,7 @@ class TransactionUseCardView(BaseCreditCardViewMixin, ModelView):
 
 class TransactionUseCard(Wizard):
     """
-    Add a payment profile
+    Transaction using Credit Card wizard
     """
     __name__ = 'payment_gateway.transaction.use_card'
 
