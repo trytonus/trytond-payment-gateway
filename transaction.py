@@ -777,14 +777,21 @@ class AddPaymentProfile(Wizard):
         if your proivder internal name is paypal, then the method name
         should be `transition_add_paypal`
 
-        Once validated, the payment profile must be created by the method.
+        Once validated, the payment profile must be created by the method and
+        the active record of the created payment record should be returned.
 
         A helper function is provided in this class itself which fills in most
         of the information automatically and the only additional information
         required is the reference from the payment provider.
+
+        If return_profile is set to True in the context, then the created
+        profile is returned.
         """
         method_name = 'transition_add_%s' % self.card_info.provider
-        return getattr(self, method_name)()
+        if Transaction().context.get('return_profile'):
+            return getattr(self, method_name)()
+        else:
+            return 'end'
 
 
 class TransactionUseCardView(BaseCreditCardViewMixin, ModelView):
