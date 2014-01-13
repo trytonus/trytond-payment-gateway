@@ -85,8 +85,7 @@ class PaymentGatewaySelf:
     def get_methods(self):
         if self.provider == 'self':
             return [
-                ('cod', 'Cash On Delivery'),
-                ('cheque', 'Cheque'),
+                ('manual', 'Manual/Offline'),
             ]
         return super(PaymentGatewaySelf, self).get_methods()
 
@@ -215,24 +214,36 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             ('completed', 'posted'),
         ))
         cls._buttons.update({
+            'process': {
+                'invisible': ~(
+                    (Eval('state') == 'draft') &
+                    (Eval('method') == 'manual')
+                ),
+            },
             'cancel': {
                 'invisible': ~Eval('state').in_(['in-progress', 'authorized']),
             },
             'authorize': {
                 'invisible': ~(
                     (Eval('state') == 'draft') &
-                    Eval('payment_profile', True)
+                    Eval('payment_profile', True) &
+                    (Eval('method') == 'credit_card')
                 ),
             },
             'settle': {
-                'invisible': ~(Eval('state') == 'authorized'),
+                'invisible': ~(
+                    (Eval('state') == 'authorized') &
+                    (Eval('method') == 'credit_card')
+                ),
             },
             'retry': {
                 'invisible': ~(Eval('state') == 'failed'),
             },
             'capture': {
                 'invisible': ~(
-                    (Eval('state') == 'draft') & Eval('payment_profile', True)
+                    (Eval('state') == 'draft') &
+                    Eval('payment_profile', True) &
+                    (Eval('method') == 'credit_card')
                 ),
             },
             'post': {
@@ -360,6 +371,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
                     ('authorization', transaction.gateway.provider),
                 )
             getattr(transaction, method_name)()
+
+    @classmethod
+    @ModelView.button
+    @Workflow.transition('in-progress')
+    def process(cls, transactions):
+        pass
 
     @classmethod
     @ModelView.button
