@@ -85,8 +85,7 @@ class PaymentGatewaySelf:
     def get_methods(self):
         if self.provider == 'self':
             return [
-                ('cod', 'Cash On Delivery'),
-                ('cheque', 'Cheque'),
+                ('manual', 'Manual/Offline'),
             ]
         return super(PaymentGatewaySelf, self).get_methods()
 
@@ -215,24 +214,36 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             ('completed', 'posted'),
         ))
         cls._buttons.update({
+            'process': {
+                'invisible': ~(
+                    (Eval('state') == 'draft') &
+                    (Eval('method') == 'manual')
+                ),
+            },
             'cancel': {
                 'invisible': ~Eval('state').in_(['in-progress', 'authorized']),
             },
             'authorize': {
                 'invisible': ~(
                     (Eval('state') == 'draft') &
-                    Eval('payment_profile', True)
+                    Eval('payment_profile', True) &
+                    (Eval('method') == 'credit_card')
                 ),
             },
             'settle': {
-                'invisible': ~(Eval('state') == 'authorized'),
+                'invisible': ~(
+                    (Eval('state') == 'authorized') &
+                    (Eval('method') == 'credit_card')
+                ),
             },
             'retry': {
                 'invisible': ~(Eval('state') == 'failed'),
             },
             'capture': {
                 'invisible': ~(
-                    (Eval('state') == 'draft') & Eval('payment_profile', True)
+                    (Eval('state') == 'draft') &
+                    Eval('payment_profile', True) &
+                    (Eval('method') == 'credit_card')
                 ),
             },
             'post': {
@@ -360,6 +371,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
                     ('authorization', transaction.gateway.provider),
                 )
             getattr(transaction, method_name)()
+
+    @classmethod
+    @ModelView.button
+    @Workflow.transition('in-progress')
+    def process(cls, transactions):
+        pass
 
     @classmethod
     @ModelView.button
@@ -760,14 +777,21 @@ class AddPaymentProfile(Wizard):
         if your proivder internal name is paypal, then the method name
         should be `transition_add_paypal`
 
-        Once validated, the payment profile must be created by the method.
+        Once validated, the payment profile must be created by the method and
+        the active record of the created payment record should be returned.
 
         A helper function is provided in this class itself which fills in most
         of the information automatically and the only additional information
         required is the reference from the payment provider.
+
+        If return_profile is set to True in the context, then the created
+        profile is returned.
         """
         method_name = 'transition_add_%s' % self.card_info.provider
-        return getattr(self, method_name)()
+        if Transaction().context.get('return_profile'):
+            return getattr(self, method_name)()
+        else:
+            return 'end'
 
 
 class TransactionUseCardView(BaseCreditCardViewMixin, ModelView):
@@ -779,7 +803,7 @@ class TransactionUseCardView(BaseCreditCardViewMixin, ModelView):
 
 class TransactionUseCard(Wizard):
     """
-    Add a payment profile
+    Transaction using Credit Card wizard
     """
     __name__ = 'payment_gateway.transaction.use_card'
 
