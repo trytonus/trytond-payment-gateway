@@ -791,6 +791,7 @@ class AddPaymentProfile(Wizard):
         if Transaction().context.get('return_profile'):
             return getattr(self, method_name)()
         else:
+            getattr(self, method_name)()
             return 'end'
 
 
