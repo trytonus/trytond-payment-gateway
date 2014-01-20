@@ -2,6 +2,8 @@
 <!-- The COPYRIGHT file at the top level of
 this repository contains the full copyright notices and license terms. -->
 <form string="Payment Profile">
+    <label name="sequence"/>
+    <field name="sequence"/>
     <label name="address"/>
     <field name="address" xfill="1"/>
     <label name="party"/>
