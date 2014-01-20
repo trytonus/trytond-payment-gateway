@@ -4,9 +4,11 @@ this repository contains the full copyright notices and license terms. -->
 <data>
     <xpath expr="/form/notebook" position="inside">
         <page string="Payment Profiles" id="payment_profiles">
-            <button name="add_payment_profile" colspan="4"
+            <label name="default_payment_profile"/>
+            <field name="default_payment_profile"/>
+            <button name="add_payment_profile" colspan="2"
                 string="Add payment profile"/>
-            <field name="payment_profiles"/>
+            <field name="payment_profiles" colspan="4"/>
         </page>
     </xpath>
 </data>

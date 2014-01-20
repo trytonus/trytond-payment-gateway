@@ -615,6 +615,10 @@ class Party:
     payment_profiles = fields.One2Many(
         'party.payment_profile', 'party', 'Payment Profiles'
     )
+    default_payment_profile = fields.Function(
+        fields.Many2One('party.payment_profile', 'Default Payment Profile'),
+        'get_default_payment_profile'
+    )
 
     @classmethod
     def __setup__(cls):
@@ -627,6 +631,13 @@ class Party:
     @ModelView.button_action('payment_gateway.wizard_add_payment_profile')
     def add_payment_profile(cls, parties):
         pass
+
+    def get_default_payment_profile(self, name):
+        """
+        Gets the payment profile with the lowest sequence,
+        as in 1 is the highest priority and sets it
+        """
+        return self.payment_profiles and self.payment_profiles[0].id or None
 
 
 class PaymentProfile(ModelSQL, ModelView):
@@ -644,6 +655,7 @@ class PaymentProfile(ModelSQL, ModelView):
     """
     __name__ = 'party.payment_profile'
 
+    sequence = fields.Integer('Sequence', required=True)
     party = fields.Many2One('party.party', 'Party', required=True)
     address = fields.Many2One(
         'party.address', 'Address', required=True,
@@ -672,6 +684,15 @@ class PaymentProfile(ModelSQL, ModelView):
         ('12', '12-December'),
     ], 'Expiry Month', required=True)
     expiry_year = fields.Integer('Expiry Year', required=True)
+
+    @staticmethod
+    def default_sequence():
+        return 10
+
+    @classmethod
+    def __setup__(cls):
+        super(PaymentProfile, cls).__setup__()
+        cls._order.insert(0, ('sequence', 'ASC'))
 
     def get_rec_name(self, name=None):
         if self.last_4_digits:
