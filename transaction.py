@@ -774,7 +774,10 @@ class AddPaymentProfile(Wizard):
 
         party = Party(Transaction().context.get('active_id'))
 
-        res = {'party': party.id}
+        res = {
+                'party': party.id,
+                'owner': party.name,
+        }
 
         try:
             address = self.party.address_get(type='invoice')
