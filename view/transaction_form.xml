@@ -6,6 +6,10 @@ this repository contains the full copyright notices and license terms. -->
     <field name="uuid" xfill="1"/>  
     <label name="provider_reference"/>
     <field name="provider_reference"/>  
+    <label name="description"/>
+    <field name="description"/>  
+    <label name="origin"/>
+    <field name="origin"/>  
     <notebook colspan="4">
         <page string="General" id="general">
             <label name="party"/>

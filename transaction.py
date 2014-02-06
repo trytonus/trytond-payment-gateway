@@ -95,6 +95,15 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     __name__ = 'payment_gateway.transaction'
 
     uuid = fields.Char('UUID', required=True, readonly=True)
+    description = fields.Char(
+        'Description', states=READONLY_IF_NOT_DRAFT,
+        depends=['state']
+    )
+    origin = fields.Reference(
+        'Origin', selection='get_origin', select=True,
+        states=READONLY_IF_NOT_DRAFT,
+        depends=['state']
+    )
     provider_reference = fields.Char(
         'Provider Reference', readonly=True, states={
             'invisible': Eval('state') == 'draft'
@@ -191,6 +200,18 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         return '%s/%s' % (
             self.payment_profile.rec_name, self.provider_reference
         )
+
+    @classmethod
+    def _get_origin(cls):
+        'Return list of Model names for origin Reference'
+        return []
+
+    @classmethod
+    def get_origin(cls):
+        IrModel = Pool().get('ir.model')
+        models = cls._get_origin()
+        models = IrModel.search([('model', 'in', models)])
+        return [(None, '')] + [(m.model, m.name) for m in models]
 
     @classmethod
     def __setup__(cls):
