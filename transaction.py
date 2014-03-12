@@ -615,7 +615,7 @@ class BaseCreditCardViewMixin(object):
         ('11', '11-November'),
         ('12', '12-December'),
     ], 'Expiry Month', required=True)
-    expiry_year = fields.Integer('Expiry Year', required=True)
+    expiry_year = fields.Char('Expiry Year', required=True, size=4)
     csc = fields.Integer('Card Security Code (CVV/CVD)', help='CVD/CVV/CVN')
 
     @staticmethod
@@ -704,7 +704,7 @@ class PaymentProfile(ModelSQL, ModelView):
         ('11', '11-November'),
         ('12', '12-December'),
     ], 'Expiry Month', required=True)
-    expiry_year = fields.Integer('Expiry Year', required=True)
+    expiry_year = fields.Char('Expiry Year', required=True, size=4)
 
     @staticmethod
     def default_sequence():
