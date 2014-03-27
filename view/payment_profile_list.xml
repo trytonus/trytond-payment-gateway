@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tree string="Payment Profiles">
+    <field name="sequence"/>
+    <field name="party"/>
+    <field name="gateway"/>
+    <field name="last_4_digits"/>
+    <field name="expiry_month"/>
+    <field name="expiry_year"/>
+</tree>
+

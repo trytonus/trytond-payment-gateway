@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<form string="Transaction Logs">
+    <label name="timestamp"/>
+    <field name="timestamp"/>
+    <label name="transaction"/>
+    <field name="transaction"/>
+    <separator id="log" colspan="4" string="Log Message"/>
+    <field name="log" colspan="4"/>
+</form>

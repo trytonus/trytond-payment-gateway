@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<tryton>
+    <data>
+        <record model="ir.ui.view" id="gateway_view_form">
+            <field name="model">payment_gateway.gateway</field>
+            <field name="type">form</field>
+            <field name="name">gateway_form</field>
+        </record>
+        <record model="ir.ui.view" id="gateway_view_list">
+            <field name="model">payment_gateway.gateway</field>
+            <field name="type">tree</field>
+            <field name="name">gateway_list</field>
+        </record>        
+        <record model="ir.action.act_window" id="act_gateway">
+            <field name="name">Payment Gateways</field>
+            <field name="res_model">payment_gateway.gateway</field>
+        </record>
+        <record model="ir.action.act_window.view"
+                id="act_gateway_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="gateway_view_list"/>
+            <field name="act_window" ref="act_gateway"/>
+        </record>
+        <record model="ir.action.act_window.view"
+                id="act_gateway_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="gateway_view_form"/>
+            <field name="act_window" ref="act_gateway"/>
+        </record>
+        <menuitem parent="account.menu_account_configuration"
+            action="act_gateway"
+            id="menu_payment_gateway"/>
+
+        <record model="ir.ui.view" id="transaction_log_view_form">
+            <field name="model">payment_gateway.transaction.log</field>
+            <field name="type">form</field>
+            <field name="name">transaction_log_form</field>
+        </record>
+        <record model="ir.ui.view" id="transaction_log_view_list">
+            <field name="model">payment_gateway.transaction.log</field>
+            <field name="type">tree</field>
+            <field name="name">transaction_log_list</field>
+        </record>             
+
+        <record model="ir.ui.view" id="transaction_view_form">
+            <field name="model">payment_gateway.transaction</field>
+            <field name="type">form</field>
+            <field name="name">transaction_form</field>
+        </record>
+        <record model="ir.ui.view" id="transaction_view_list">
+            <field name="model">payment_gateway.transaction</field>
+            <field name="type">tree</field>
+            <field name="name">transaction_list</field>
+        </record>        
+        <record model="ir.action.act_window" id="act_transaction">
+            <field name="name">Payment Gateway Transactions</field>
+            <field name="res_model">payment_gateway.transaction</field>
+        </record>
+        <record model="ir.action.act_window.view"
+                id="act_transaction_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="transaction_view_list"/>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.view"
+                id="act_transaction_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="transaction_view_form"/>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_draft">
+            <field name="name">Draft</field>
+            <field name="sequence" eval="10"/>
+            <field name="domain">[('state', '=', 'draft')]</field>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_inprogress">
+            <field name="name">In-Progress</field>
+            <field name="sequence" eval="20"/>
+            <field name="domain">[('state', '=', 'in-progress')]</field>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_failed">
+            <field name="name">Failed</field>
+            <field name="sequence" eval="30"/>
+            <field name="domain">[('state', '=', 'failed')]</field>
+            <field name="act_window" ref="act_transaction"/>
+        </record>          
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_authorized">
+            <field name="name">Authorized</field>
+            <field name="sequence" eval="40"/>
+            <field name="domain">[('state', '=', 'authorized')]</field>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_all">
+            <field name="name">All</field>
+            <field name="sequence" eval="50"/>
+            <field name="domain"></field>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <menuitem parent="account.menu_entries"
+            action="act_transaction"
+            id="menu_payment_transaction"/>
+
+        <record model="ir.ui.view" id="payment_profile_view_form">
+            <field name="model">party.payment_profile</field>
+            <field name="type">form</field>
+            <field name="name">payment_profile_form</field>
+        </record>
+        <record model="ir.ui.view" id="payment_profile_view_list">
+            <field name="model">party.payment_profile</field>
+            <field name="type">tree</field>
+            <field name="name">payment_profile_list</field>
+        </record>        
+        <record model="ir.action.act_window" id="act_payment_profile">
+            <field name="name">Payment Gateways</field>
+            <field name="res_model">party.payment_profile</field>
+        </record>
+        <record model="ir.action.act_window.view"
+                id="act_payment_profile_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="payment_profile_view_list"/>
+            <field name="act_window" ref="act_payment_profile"/>
+        </record>
+        <record model="ir.action.act_window.view"
+                id="act_payment_profile_view2">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="payment_profile_view_form"/>
+            <field name="act_window" ref="act_payment_profile"/>
+        </record>
+        <record model="ir.ui.view" id="party_payment_profile_form">
+            <field name="model">party.party</field>
+            <field name="inherit" ref="party.party_view_form"/>
+            <field name="name">party_payment_profile_form</field>
+        </record>
+        <record model="ir.action.wizard" id="wizard_add_payment_profile">
+            <field name="name">Add payment profile</field>
+            <field name="wiz_name">party.party.payment_profile.add</field>
+            <field name="model">party.party</field>
+        </record>          
+
+        <record model="ir.ui.view" id="payment_profile_add_view_form">
+            <field name="model">party.payment_profile.add_view</field>
+            <field name="type">form</field>
+            <field name="name">payment_profile_add_form</field>
+        </record>
+
+        <record model="ir.action.wizard" id="wizard_transaction_use_card">
+            <field name="name">Use Card</field>
+            <field name="wiz_name">payment_gateway.transaction.use_card</field>
+            <field name="model">payment_gateway.transaction</field>
+        </record>   
+        <record model="ir.ui.view" id="transaction_use_card_view_form">
+            <field name="model">payment_gateway.transaction.use_card.view</field>
+            <field name="type">form</field>
+            <field name="name">transaction_use_card_form</field>
+        </record>
+
+        <!-- Access rights -->
+        <record model="ir.model.access" id="access_gateway">
+            <field name="model" search="[('model', '=', 'payment_gateway.gateway')]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.model.access" id="access_gateway_account_admin">
+            <field name="model" search="[('model', '=', 'payment_gateway.gateway')]"/>
+            <field name="group" ref="account.group_account_admin"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="True"/>
+        </record>
+        <record model="ir.model.access" id="access_transaction">
+            <field name="model" search="[('model', '=', 'payment_gateway.transaction')]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.model.access" id="access_transaction_account">
+            <field name="model" search="[('model', '=', 'payment_gateway.transaction')]"/>
+            <field name="group" ref="account.group_account"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.model.access" id="access_transaction_account_admin">
+            <field name="model" search="[('model', '=', 'payment_gateway.transaction')]"/>
+            <field name="group" ref="account.group_account_admin"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="True"/>
+        </record>             
+    </data>
+</tryton>

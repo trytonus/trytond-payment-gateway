@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<form string="Payment Gateway">
+    <label name="name"/>
+    <field name="name"/>
+    <label name="journal"/>
+    <field name="journal"/>
+    <label name="provider"/>
+    <field name="provider"/>
+    <label name="method"/>
+    <field name="method"/>
+    <label name="test"/>
+    <field name="test"/>
+    <!-- Leave an empty notebook which future modules can update -->
+    <notebook colspan="4">
+    </notebook>
+</form>

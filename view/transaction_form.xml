@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<form string="Transaction" cursor="party">
+    <label name="uuid"/>
+    <field name="uuid" xfill="1"/>  
+    <label name="provider_reference"/>
+    <field name="provider_reference"/>  
+    <label name="description"/>
+    <field name="description"/>  
+    <label name="origin"/>
+    <field name="origin"/>  
+    <notebook colspan="4">
+        <page string="General" id="general">
+            <label name="party"/>
+            <field name="party"/>
+            <label name="address"/>
+            <field name="address"/>
+            <label name="gateway"/>
+            <field name="gateway"/>
+            <label name="payment_profile"/>
+            <field name="payment_profile"/>
+            <label name="amount"/>
+            <field name="amount"/>
+            <label name="currency"/>
+            <field name="currency"/>
+        </page>
+        <page string="Other Information" id="other_info" col="6">
+            <label name="company"/>
+            <field name="company"/>
+            <label name="method"/>
+            <field name="method"/> 
+            <label name="move"/>
+            <field name="move"/> 
+            <separator colspan="6" string="Logs" id="logs"/>           
+            <field name="logs" colspan="6"/>
+        </page>
+    </notebook>
+    <group col="9" colspan="4" id="buttons">
+        <field name="state"/>        
+        <button name="cancel" string="Cancel"
+            icon="tryton-cancel"
+            confirm="Are you sure to cancel the transaction?"/>
+        <button name="authorize"
+            string="Pre _Authorize"
+            help="Attempt to pre-authorise the transaction"
+            icon="tryton-go-next"/>
+        <button name="retry"
+            string="_Retry"
+            help="Retry the trnsaction"
+            icon="tryton-refresh"/>        
+        <button name="capture" string="Capture"
+            icon="tryton-ok"/>
+        <button name="settle" string="Settle"
+            icon="tryton-ok"/>          
+        <button name="post" string="Post"
+            icon="tryton-ok"/>
+        <button name="use_card" string="Enter Credit Card"
+            icon="tryton-lock"/>          
+        <button name="update_status"
+            string="_Update Status"
+            help="Update the trnsaction status"
+            icon="tryton-refresh"/>            
+    </group>    
+
+</form>
