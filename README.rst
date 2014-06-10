@@ -1,6 +1,12 @@
 Payment Gateway
 ===============
 
+.. image:: https://travis-ci.org/openlabs/payment-gateway.png?branch=develop
+  :target: https://travis-ci.org/openlabs/payment-gateway
+
+.. image:: https://coveralls.io/repos/openlabs/payment-gateway/badge.png?branch=develop
+  :target: https://coveralls.io/r/openlabs/payment-gateway
+
 A tryton base module to accept and process payments within Tryton using
 credit cards.
 
