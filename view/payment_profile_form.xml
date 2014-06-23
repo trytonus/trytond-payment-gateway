@@ -19,5 +19,7 @@ this repository contains the full copyright notices and license terms. -->
         <field name="expiry_month"/>
         <label name="expiry_year"/>
         <field name="expiry_year"/>
+        <label name="active"/>
+        <field name="active"/>
     </group>
 </form>
