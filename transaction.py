@@ -705,6 +705,7 @@ class PaymentProfile(ModelSQL, ModelView):
         ('12', '12-December'),
     ], 'Expiry Month', required=True)
     expiry_year = fields.Char('Expiry Year', required=True, size=4)
+    active = fields.Boolean('Active', select=True)
 
     @staticmethod
     def default_sequence():
@@ -719,6 +720,10 @@ class PaymentProfile(ModelSQL, ModelView):
         if self.last_4_digits:
             return self.gateway.name + ('xxxx ' * 3) + self.last_4_digits
         return 'Incomplete Card'
+
+    @staticmethod
+    def default_active():
+        return True
 
 
 class AddPaymentProfileView(BaseCreditCardViewMixin, ModelView):
