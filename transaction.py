@@ -123,8 +123,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         ], depends=['state']
     )
     party = fields.Many2One(
-        'party.party', 'Party', required=True,
-        on_change=['party'], ondelete='RESTRICT',
+        'party.party', 'Party', required=True, ondelete='RESTRICT',
         depends=['state'], states=READONLY_IF_NOT_DRAFT,
     )
     payment_profile = fields.Many2One(
@@ -133,9 +132,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             ('party', '=', Eval('party')),
             ('gateway', '=', Eval('gateway')),
         ],
-        on_change=['payment_profile'],
-        ondelete='RESTRICT',
-        depends=['state', 'party', 'gateway'],
+        ondelete='RESTRICT', depends=['state', 'party', 'gateway'],
         states=READONLY_IF_NOT_DRAFT,
     )
     address = fields.Many2One(
@@ -155,14 +152,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         depends=['state'], states=READONLY_IF_NOT_DRAFT,
     )
     currency_digits = fields.Function(
-        fields.Integer(
-            'Currency Digits', on_change_with=['currency']
-        ), 'on_change_with_currency_digits'
+        fields.Integer('Currency Digits'),
+        'on_change_with_currency_digits'
     )
     gateway = fields.Many2One(
         'payment_gateway.gateway', 'Gateway', required=True,
-        states=READONLY_IF_NOT_DRAFT, depends=['state'],
-        ondelete='RESTRICT', on_change=['gateway']
+        states=READONLY_IF_NOT_DRAFT, depends=['state'], ondelete='RESTRICT',
     )
     provider = fields.Function(
         fields.Char('Provider'), 'get_provider'
@@ -318,11 +313,13 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         })
         return super(PaymentTransaction, cls).copy(records, default)
 
+    @fields.depends('currency')
     def on_change_with_currency_digits(self, name=None):
         if self.currency:
             return self.currency.digits
         return 2
 
+    @fields.depends('party')
     def on_change_party(self):
         res = {
             'address': None,
@@ -338,6 +335,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
                 res['address.rec_name'] = address.rec_name
         return res
 
+    @fields.depends('payment_profile')
     def on_change_payment_profile(self):
         res = {}
         if self.payment_profile:
@@ -357,6 +355,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         """
         return self.gateway.method
 
+    @fields.depends('gateway')
     def on_change_gateway(self):
         if self.gateway:
             return {
