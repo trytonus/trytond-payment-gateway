@@ -45,7 +45,6 @@ class PaymentGateway(ModelSQL, ModelView):
     provider = fields.Selection('get_providers', 'Provider', required=True)
     method = fields.Selection(
         'get_methods', 'Method', required=True,
-        selection_change_with=['provider']
     )
     test = fields.Boolean('Test Account')
 
@@ -60,6 +59,7 @@ class PaymentGateway(ModelSQL, ModelView):
         """
         return []
 
+    @fields.depends('provider')
     def get_methods(self):
         """
         Downstream modules can override the method and add entries to this
