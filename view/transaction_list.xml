@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <!-- The COPYRIGHT file at the top level of
 this repository contains the full copyright notices and license terms. -->
-<tree string="Transactions">
+<tree string="Transactions"
+        colors="If(In(Eval('state', ''), ['in-progress', 'authorized', 'completed']), 'blue', If(In(Eval('state', ''), ['failed', 'cancel']), 'red', If(Equal(Eval('state', ''), 'posted'), 'green', 'black')))">
     <field name="date"/>
     <field name="uuid"/>
     <field name="party"/>
