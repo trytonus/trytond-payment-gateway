@@ -2,6 +2,10 @@
 <!-- The COPYRIGHT file at the top level of
 this repository contains the full copyright notices and license terms. -->
 <form string="Enter Card Information">
+    <label name="swipe_data"/>
+    <field name="swipe_data" widget="password"/>
+    <label name="card_present"/>
+    <field name="card_present"/>
     <label name="owner"/>
     <field name="owner" xfill="1"/>
     <newline/>

@@ -7,6 +7,7 @@
     :license: BSD, see LICENSE for more details
 
 '''
+import re
 from uuid import uuid4
 from decimal import Decimal
 from datetime import datetime
@@ -611,27 +612,63 @@ class TransactionLog(ModelSQL, ModelView):
         }])[0]
 
 
+WHEN_CP = {
+    # Required if card is present
+    'required': Bool(Eval('card_present')),
+
+    # Readonly if card is **not** present
+    'readonly': ~Bool(Eval('card_present'))
+}
+WHEN_CNP = {
+    # Required if card is not present
+    'required': ~Bool(Eval('card_present')),
+
+    # Readonly if card is present
+    'readonly': Bool(Eval('card_present'))
+}
+
+
 class BaseCreditCardViewMixin(object):
     """
     A Reusable Mixin class to get Credit Card view
     """
-    owner = fields.Char('Card Owner', required=True)
-    number = fields.Char('Card Number', required=True)
-    expiry_month = fields.Selection([
-        ('01', '01-January'),
-        ('02', '02-February'),
-        ('03', '03-March'),
-        ('04', '04-April'),
-        ('05', '05-May'),
-        ('06', '06-June'),
-        ('07', '07-July'),
-        ('08', '08-August'),
-        ('09', '09-September'),
-        ('10', '10-October'),
-        ('11', '11-November'),
-        ('12', '12-December'),
-    ], 'Expiry Month', required=True)
-    expiry_year = fields.Char('Expiry Year', required=True, size=4)
+    card_present = fields.Boolean(
+        'Card is Present',
+        help="If the card is present and the card can be swiped"
+    )
+    swipe_data = fields.Char(
+        'Swipe Card',
+        states=WHEN_CP, depends=['card_present'],
+    )
+    owner = fields.Char(
+        'Card Owner',
+        states=WHEN_CNP, depends=['card_present'],
+    )
+    number = fields.Char(
+        'Card Number',
+        states=WHEN_CNP, depends=['card_present'],
+    )
+    expiry_month = fields.Selection(
+        [
+            ('01', '01-January'),
+            ('02', '02-February'),
+            ('03', '03-March'),
+            ('04', '04-April'),
+            ('05', '05-May'),
+            ('06', '06-June'),
+            ('07', '07-July'),
+            ('08', '08-August'),
+            ('09', '09-September'),
+            ('10', '10-October'),
+            ('11', '11-November'),
+            ('12', '12-December'),
+        ], 'Expiry Month',
+        states=WHEN_CNP, depends=['card_present'],
+    )
+    expiry_year = fields.Char(
+        'Expiry Year', size=4,
+        states=WHEN_CNP, depends=['card_present'],
+    )
     csc = fields.Integer('Card Security Code (CVV/CVD)', help='CVD/CVV/CVN')
 
     @staticmethod
@@ -644,6 +681,41 @@ class BaseCreditCardViewMixin(object):
         party_id = Transaction().context.get('party')
         if party_id:
             return Party(party_id).name
+
+    track1_re = re.compile(
+        r'^%(?P<FC>\w)(?P<PAN>\d+)\^(?P<NAME>.{2,26})\^(?P<YY>\d{2})'
+        '(?P<MM>\d{2})(?P<SC>\d{0,3}|\^)(?P<DD>.*)\?$'
+    )
+
+    @fields.depends('swipe_data')
+    def on_change_swipe_data(self):
+        """
+        Try to parse the track1 and track2 data into Credit card information
+        """
+        res = {}
+
+        try:
+            track1, track2 = self.swipe_data.split(';')
+        except ValueError:
+            return {
+                'owner': '',
+                'number': '',
+                'expiry_month': '',
+                'expiry_year': '',
+            }
+
+        match = self.track1_re.match(track1)
+        if match:
+            # Track1 matched, extract info and send
+            assert match.group('FC') == 'B', 'Unknown card Format Code'
+
+            res['owner'] = match.group('NAME')
+            res['number'] = match.group('PAN')
+            res['expiry_month'] = match.group('MM')
+            res['expiry_year'] = '20' + match.group('YY')
+
+        # TODO: Match track 2
+        return res
 
 
 class Party:
