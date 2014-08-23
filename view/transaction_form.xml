@@ -36,11 +36,15 @@ this repository contains the full copyright notices and license terms. -->
             <field name="logs" colspan="6"/>
         </page>
     </notebook>
-    <group col="9" colspan="4" id="buttons">
+    <group col="10" colspan="4" id="buttons">
         <field name="state"/>        
         <button name="cancel" string="Cancel"
             icon="tryton-cancel"
             confirm="Are you sure to cancel the transaction?"/>
+        <button name="process"
+            string="Process"
+            help="Process the payment"
+            icon="tryton-go-next"/>
         <button name="authorize"
             string="Pre _Authorize"
             help="Attempt to pre-authorise the transaction"

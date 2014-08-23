@@ -220,6 +220,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         cls._transitions |= set((
             ('draft', 'in-progress'),
             ('draft', 'authorized'),
+            ('draft', 'completed'),     # manual payments
             ('in-progress', 'failed'),
             ('in-progress', 'authorized'),
             ('in-progress', 'completed'),
@@ -366,6 +367,16 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     def on_change_with_provider(self):
         return self.get_provider()
 
+    def cancel_self(self):
+        """
+        Method to cancel the given payment.
+        """
+        if self.method == 'manual' and self.state == 'in-progress':
+            return True
+        self.raise_user_error(
+            'Cannot cancel self payments which are not manual and in-progress'
+        )
+
     @classmethod
     @ModelView.button
     @Workflow.transition('cancel')
@@ -394,8 +405,14 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
 
     @classmethod
     @ModelView.button
-    @Workflow.transition('in-progress')
+    @Workflow.transition('completed')
     def process(cls, transactions):
+        """
+        Process a given transaction.
+
+        Used only for gateways which have manual/offline method - like cash,
+        cheque, external payment etc.
+        """
         pass
 
     @classmethod
