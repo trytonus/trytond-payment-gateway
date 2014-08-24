@@ -12,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 from trytond.tests.test_tryton import DB_NAME, USER, CONTEXT, POOL
 import trytond.tests.test_tryton
 from trytond.transaction import Transaction
+from trytond.exceptions import UserError
 
 
 class TestTransaction(unittest.TestCase):
@@ -204,6 +205,74 @@ class TestTransaction(unittest.TestCase):
                 self.assertEqual(self.AccountMove.search([], count="True"), 1)
                 self.assertEqual(self.party.receivable_today, -400)
                 self.assertEqual(self.cash_journal.debit_account.balance, 400)
+
+    def test_0210_test_dummy_gateway(self):
+        """
+        Test dummy gateway transaction
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            with Transaction().set_context(
+                    company=self.company.id, use_dummy=True):
+                gateway, = self.PaymentGateway.create([{
+                    'name': 'Dummy Gateway',
+                    'journal': self.cash_journal.id,
+                    'provider': 'dummy',
+                    'method': 'credit_card',
+                }])
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                # Process transaction
+                with self.assertRaises(UserError):
+                    self.PaymentGatewayTransaction.process([transaction])
+
+    def test_0220_test_dummy_gateway(self):
+        """
+        Test dummy gateway transaction
+        """
+        AddPaymentProfileWizard = POOL.get(
+            'party.party.payment_profile.add', type='wizard'
+        )
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            with Transaction().set_context(
+                    company=self.company.id, use_dummy=True):
+                gateway, = self.PaymentGateway.create([{
+                    'name': 'Dummy Gateway',
+                    'journal': self.cash_journal.id,
+                    'provider': 'dummy',
+                    'method': 'credit_card',
+                }])
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                # create a profile
+                profile_wiz = AddPaymentProfileWizard(
+                    AddPaymentProfileWizard.create()[0]
+                )
+                profile_wiz.card_info.party = self.party.id
+                profile_wiz.card_info.address = self.party.addresses[0].id
+                profile_wiz.card_info.provider = gateway.provider
+                profile_wiz.card_info.gateway = gateway
+                profile_wiz.card_info.owner = self.party.name
+                profile_wiz.card_info.number = '4111111111111111'
+                profile_wiz.card_info.expiry_month = '11'
+                profile_wiz.card_info.expiry_year = '2018'
+                profile_wiz.card_info.csc = '353'
+                profile_wiz.transition_add()
 
 
 def suite():
