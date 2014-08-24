@@ -217,6 +217,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         cls._error_messages.update({
             'feature_not_available': 'The feature %s is not avaialable '
                                      'for provider %s',
+            'process_only_manual': 'Only manual process can be processed.',
         })
         cls._transitions |= set((
             ('draft', 'in-progress'),
@@ -414,6 +415,9 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         Used only for gateways which have manual/offline method - like cash,
         cheque, external payment etc.
         """
+        for transaction in transactions:
+            if transaction.method != 'manual':
+                cls.raise_user_error('process_only_manual')
         pass
 
     @classmethod
