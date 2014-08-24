@@ -669,7 +669,10 @@ class BaseCreditCardViewMixin(object):
         'Expiry Year', size=4,
         states=WHEN_CNP, depends=['card_present'],
     )
-    csc = fields.Integer('Card Security Code (CVV/CVD)', help='CVD/CVV/CVN')
+    csc = fields.Integer(
+        'Card Security Code (CVV/CVD)', states=WHEN_CNP,
+        depends=['card_present'], help='CVD/CVV/CVN'
+    )
 
     @staticmethod
     def default_owner():
