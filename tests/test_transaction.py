@@ -237,9 +237,6 @@ class TestTransaction(unittest.TestCase):
         """
         Test dummy gateway transaction
         """
-        AddPaymentProfileWizard = POOL.get(
-            'party.party.payment_profile.add', type='wizard'
-        )
         with Transaction().start(DB_NAME, USER, context=CONTEXT):
             self.setup_defaults()
 
@@ -259,6 +256,38 @@ class TestTransaction(unittest.TestCase):
                 }])
                 self.assert_(transaction)
 
+                # Now authorize and capture a transaction with this
+                self.PaymentGatewayTransaction.authorize([transaction])
+                self.assertEqual(transaction.state, 'authorized')
+
+                # Now settle this transaction
+                self.PaymentGatewayTransaction.settle([transaction])
+                self.assertEqual(transaction.state, 'posted')
+                # Assert that an account move is created
+                self.assertEqual(self.AccountMove.search([], count="True"), 1)
+                self.assertEqual(self.party.receivable_today, -400)
+                self.assertEqual(self.cash_journal.debit_account.balance, 400)
+
+    def test_0220_test_dummy_profile_add(self):
+        """
+        Test dummy gateway profile addition
+        """
+        AddPaymentProfileWizard = POOL.get(
+            'party.party.payment_profile.add', type='wizard'
+        )
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            with Transaction().set_context(
+                    company=self.company.id, use_dummy=True):
+
+                gateway, = self.PaymentGateway.create([{
+                    'name': 'Dummy Gateway',
+                    'journal': self.cash_journal.id,
+                    'provider': 'dummy',
+                    'method': 'credit_card',
+                }])
+
                 # create a profile
                 profile_wiz = AddPaymentProfileWizard(
                     AddPaymentProfileWizard.create()[0]
@@ -273,6 +302,169 @@ class TestTransaction(unittest.TestCase):
                 profile_wiz.card_info.expiry_year = '2018'
                 profile_wiz.card_info.csc = '353'
                 profile_wiz.transition_add()
+
+    def test_0220_test_dummy_gateway_authorize_fail(self):
+        """
+        Test dummy gateway transaction for authorization failure
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            with Transaction().set_context(
+                    company=self.company.id, use_dummy=True):
+                gateway, = self.PaymentGateway.create([{
+                    'name': 'Dummy Gateway',
+                    'journal': self.cash_journal.id,
+                    'provider': 'dummy',
+                    'method': 'credit_card',
+                }])
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                with Transaction().set_context(dummy_succeed=False):
+                    # Now authorize and capture a transaction with this
+                    self.PaymentGatewayTransaction.authorize([transaction])
+
+                self.assertEqual(transaction.state, 'failed')
+
+    def test_0220_test_dummy_gateway_capture(self):
+        """
+        Test dummy gateway transaction for authorization failure
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            with Transaction().set_context(
+                    company=self.company.id, use_dummy=True):
+                gateway, = self.PaymentGateway.create([{
+                    'name': 'Dummy Gateway',
+                    'journal': self.cash_journal.id,
+                    'provider': 'dummy',
+                    'method': 'credit_card',
+                }])
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                self.PaymentGatewayTransaction.capture([transaction])
+
+                self.assertEqual(transaction.state, 'posted')
+                # Assert that an account move is created
+                self.assertEqual(self.AccountMove.search([], count="True"), 1)
+                self.assertEqual(self.party.receivable_today, -400)
+                self.assertEqual(self.cash_journal.debit_account.balance, 400)
+
+    def test_0220_test_dummy_gateway_capture_fail(self):
+        """
+        Test dummy gateway transaction for authorization failure
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            with Transaction().set_context(
+                    company=self.company.id, use_dummy=True):
+                gateway, = self.PaymentGateway.create([{
+                    'name': 'Dummy Gateway',
+                    'journal': self.cash_journal.id,
+                    'provider': 'dummy',
+                    'method': 'credit_card',
+                }])
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                with Transaction().set_context(dummy_succeed=False):
+                    self.PaymentGatewayTransaction.capture([transaction])
+
+                self.assertEqual(transaction.state, 'failed')
+
+    def test_0230_manual_gateway_auth_settle(self):
+        """
+        Test authorize and capture with the manual payment gateway
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            gateway, = self.PaymentGateway.create([{
+                'name': 'Test Gateway',
+                'journal': self.cash_journal.id,
+                'provider': 'self',
+                'method': 'manual',
+            }])
+
+            with Transaction().set_context({'company': self.company.id}):
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                # Process transaction
+                self.PaymentGatewayTransaction.authorize([transaction])
+                self.assertEqual(transaction.state, 'authorized')
+                # Assert that an account move is **not** created
+                self.assertEqual(self.AccountMove.search([], count="True"), 0)
+                self.assertEqual(self.party.receivable_today, 0)
+                self.assertEqual(self.cash_journal.debit_account.balance, 0)
+
+                # Capture transaction
+                self.PaymentGatewayTransaction.settle([transaction])
+
+                transaction = self.PaymentGatewayTransaction(transaction.id)
+                # Assert that the transaction is done
+                self.assertEqual(transaction.state, 'posted')
+
+                # Assert that an account move is created
+                self.assertEqual(self.AccountMove.search([], count="True"), 1)
+                self.assertEqual(self.party.receivable_today, -400)
+                self.assertEqual(self.cash_journal.debit_account.balance, 400)
+
+    def test_0240_manual_gateway_capture(self):
+        """
+        Test authorize and capture with the manual payment gateway
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            gateway, = self.PaymentGateway.create([{
+                'name': 'Test Gateway',
+                'journal': self.cash_journal.id,
+                'provider': 'self',
+                'method': 'manual',
+            }])
+
+            with Transaction().set_context({'company': self.company.id}):
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                # Process transaction
+                self.PaymentGatewayTransaction.capture([transaction])
+                self.assertEqual(transaction.state, 'posted')
+
+                # Assert that an account move is created
+                self.assertEqual(self.AccountMove.search([], count="True"), 1)
+                self.assertEqual(self.party.receivable_today, -400)
+                self.assertEqual(self.cash_journal.debit_account.balance, 400)
 
 
 def suite():
