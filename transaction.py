@@ -23,7 +23,7 @@ from trytond.model import ModelSQL, ModelView, Workflow, fields
 
 
 __all__ = [
-    'PaymentGateway', 'PaymentGatewaySelf', 'PaymentTransaction',
+    'PaymentGateway', 'PaymentTransaction',
     'TransactionLog', 'PaymentProfile', 'AddPaymentProfileView',
     'AddPaymentProfile', 'BaseCreditCardViewMixin', 'Party',
     'TransactionUseCardView', 'TransactionUseCard',
@@ -66,29 +66,6 @@ class PaymentGateway(ModelSQL, ModelView):
         Downstream modules can override the method and add entries to this
         """
         return []
-
-
-class PaymentGatewaySelf:
-    "COD, Cheque and Bank Transfer Implementation"
-    __name__ = 'payment_gateway.gateway'
-
-    @classmethod
-    def get_providers(cls, values=None):
-        """
-        Downstream modules can add to the list
-        """
-        rv = super(PaymentGatewaySelf, cls).get_providers()
-        self_record = ('self', 'Self')
-        if self_record not in rv:
-            rv.append(self_record)
-        return rv
-
-    def get_methods(self):
-        if self.provider == 'self':
-            return [
-                ('manual', 'Manual/Offline'),
-            ]
-        return super(PaymentGatewaySelf, self).get_methods()
 
 
 class PaymentTransaction(Workflow, ModelSQL, ModelView):
