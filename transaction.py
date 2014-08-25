@@ -323,7 +323,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             res['address.rec_name'] = self.payment_profile.address.rec_name
         return res
 
-    def get_provider(self):
+    def get_provider(self, name=None):
         """
         Return the gateway provider based on the gateway
         """
@@ -342,6 +342,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
                 'provider': self.gateway.provider,
                 'method': self.gateway.method,
             }
+        return {}
 
     def on_change_with_provider(self):
         return self.get_provider()
