@@ -7,6 +7,7 @@
     :license: BSD, see LICENSE for more details
 
 '''
+import re
 from uuid import uuid4
 from decimal import Decimal
 from datetime import datetime
@@ -22,7 +23,7 @@ from trytond.model import ModelSQL, ModelView, Workflow, fields
 
 
 __all__ = [
-    'PaymentGateway', 'PaymentGatewaySelf', 'PaymentTransaction',
+    'PaymentGateway', 'PaymentTransaction',
     'TransactionLog', 'PaymentProfile', 'AddPaymentProfileView',
     'AddPaymentProfile', 'BaseCreditCardViewMixin', 'Party',
     'TransactionUseCardView', 'TransactionUseCard',
@@ -45,7 +46,6 @@ class PaymentGateway(ModelSQL, ModelView):
     provider = fields.Selection('get_providers', 'Provider', required=True)
     method = fields.Selection(
         'get_methods', 'Method', required=True,
-        selection_change_with=['provider']
     )
     test = fields.Boolean('Test Account')
 
@@ -60,34 +60,12 @@ class PaymentGateway(ModelSQL, ModelView):
         """
         return []
 
+    @fields.depends('provider')
     def get_methods(self):
         """
         Downstream modules can override the method and add entries to this
         """
         return []
-
-
-class PaymentGatewaySelf:
-    "COD, Cheque and Bank Transfer Implementation"
-    __name__ = 'payment_gateway.gateway'
-
-    @classmethod
-    def get_providers(cls, values=None):
-        """
-        Downstream modules can add to the list
-        """
-        rv = super(PaymentGatewaySelf, cls).get_providers()
-        self_record = ('self', 'Self')
-        if self_record not in rv:
-            rv.append(self_record)
-        return rv
-
-    def get_methods(self):
-        if self.provider == 'self':
-            return [
-                ('manual', 'Manual/Offline'),
-            ]
-        return super(PaymentGatewaySelf, self).get_methods()
 
 
 class PaymentTransaction(Workflow, ModelSQL, ModelView):
@@ -216,10 +194,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         cls._error_messages.update({
             'feature_not_available': 'The feature %s is not avaialable '
                                      'for provider %s',
+            'process_only_manual': 'Only manual process can be processed.',
         })
         cls._transitions |= set((
             ('draft', 'in-progress'),
             ('draft', 'authorized'),
+            ('draft', 'completed'),     # manual payments
             ('in-progress', 'failed'),
             ('in-progress', 'authorized'),
             ('in-progress', 'completed'),
@@ -366,6 +346,16 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     def on_change_with_provider(self):
         return self.get_provider()
 
+    def cancel_self(self):
+        """
+        Method to cancel the given payment.
+        """
+        if self.method == 'manual' and self.state == 'in-progress':
+            return True
+        self.raise_user_error(
+            'Cannot cancel self payments which are not manual and in-progress'
+        )
+
     @classmethod
     @ModelView.button
     @Workflow.transition('cancel')
@@ -394,8 +384,17 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
 
     @classmethod
     @ModelView.button
-    @Workflow.transition('in-progress')
+    @Workflow.transition('completed')
     def process(cls, transactions):
+        """
+        Process a given transaction.
+
+        Used only for gateways which have manual/offline method - like cash,
+        cheque, external payment etc.
+        """
+        for transaction in transactions:
+            if transaction.method != 'manual':
+                cls.raise_user_error('process_only_manual')
         pass
 
     @classmethod
@@ -594,28 +593,67 @@ class TransactionLog(ModelSQL, ModelView):
         }])[0]
 
 
+WHEN_CP = {
+    # Required if card is present
+    'required': Bool(Eval('card_present')),
+
+    # Readonly if card is **not** present
+    'readonly': ~Bool(Eval('card_present'))
+}
+WHEN_CNP = {
+    # Required if card is not present
+    'required': ~Bool(Eval('card_present')),
+
+    # Readonly if card is present
+    'readonly': Bool(Eval('card_present'))
+}
+
+
 class BaseCreditCardViewMixin(object):
     """
     A Reusable Mixin class to get Credit Card view
     """
-    owner = fields.Char('Card Owner', required=True)
-    number = fields.Char('Card Number', required=True)
-    expiry_month = fields.Selection([
-        ('01', '01-January'),
-        ('02', '02-February'),
-        ('03', '03-March'),
-        ('04', '04-April'),
-        ('05', '05-May'),
-        ('06', '06-June'),
-        ('07', '07-July'),
-        ('08', '08-August'),
-        ('09', '09-September'),
-        ('10', '10-October'),
-        ('11', '11-November'),
-        ('12', '12-December'),
-    ], 'Expiry Month', required=True)
-    expiry_year = fields.Char('Expiry Year', required=True, size=4)
-    csc = fields.Integer('Card Security Code (CVV/CVD)', help='CVD/CVV/CVN')
+    card_present = fields.Boolean(
+        'Card is Present',
+        help="If the card is present and the card can be swiped"
+    )
+    swipe_data = fields.Char(
+        'Swipe Card',
+        states=WHEN_CP, depends=['card_present'],
+    )
+    owner = fields.Char(
+        'Card Owner',
+        states=WHEN_CNP, depends=['card_present'],
+    )
+    number = fields.Char(
+        'Card Number',
+        states=WHEN_CNP, depends=['card_present'],
+    )
+    expiry_month = fields.Selection(
+        [
+            ('01', '01-January'),
+            ('02', '02-February'),
+            ('03', '03-March'),
+            ('04', '04-April'),
+            ('05', '05-May'),
+            ('06', '06-June'),
+            ('07', '07-July'),
+            ('08', '08-August'),
+            ('09', '09-September'),
+            ('10', '10-October'),
+            ('11', '11-November'),
+            ('12', '12-December'),
+        ], 'Expiry Month',
+        states=WHEN_CNP, depends=['card_present'],
+    )
+    expiry_year = fields.Char(
+        'Expiry Year', size=4,
+        states=WHEN_CNP, depends=['card_present'],
+    )
+    csc = fields.Integer(
+        'Card Security Code (CVV/CVD)', states=WHEN_CNP,
+        depends=['card_present'], help='CVD/CVV/CVN'
+    )
 
     @staticmethod
     def default_owner():
@@ -627,6 +665,41 @@ class BaseCreditCardViewMixin(object):
         party_id = Transaction().context.get('party')
         if party_id:
             return Party(party_id).name
+
+    track1_re = re.compile(
+        r'^%(?P<FC>\w)(?P<PAN>\d+)\^(?P<NAME>.{2,26})\^(?P<YY>\d{2})'
+        '(?P<MM>\d{2})(?P<SC>\d{0,3}|\^)(?P<DD>.*)\?$'
+    )
+
+    @fields.depends('swipe_data')
+    def on_change_swipe_data(self):
+        """
+        Try to parse the track1 and track2 data into Credit card information
+        """
+        res = {}
+
+        try:
+            track1, track2 = self.swipe_data.split(';')
+        except ValueError:
+            return {
+                'owner': '',
+                'number': '',
+                'expiry_month': '',
+                'expiry_year': '',
+            }
+
+        match = self.track1_re.match(track1)
+        if match:
+            # Track1 matched, extract info and send
+            assert match.group('FC') == 'B', 'Unknown card Format Code'
+
+            res['owner'] = match.group('NAME')
+            res['number'] = match.group('PAN')
+            res['expiry_month'] = match.group('MM')
+            res['expiry_year'] = '20' + match.group('YY')
+
+        # TODO: Match track 2
+        return res
 
 
 class Party:
