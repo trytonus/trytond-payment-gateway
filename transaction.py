@@ -161,6 +161,10 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         ('posted', 'Posted'),
         ('cancel', 'Canceled'),
     ], 'State', readonly=True)
+    shipping_address = fields.Function(
+        fields.Many2One('party.address', 'Shipping Address'),
+        'get_shipping_address'
+    )
 
     def get_rec_name(self, name=None):
         """
@@ -554,6 +558,15 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     @ModelView.button_action('payment_gateway.wizard_transaction_use_card')
     def use_card(cls, transactions):
         pass
+
+    def get_shipping_address(self, name):
+        """
+        Returns the shipping address for the transaction.
+
+        The downstream modules can override this to send the
+        appropriate address in transaction.
+        """
+        return None
 
 
 class TransactionLog(ModelSQL, ModelView):
