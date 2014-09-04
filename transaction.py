@@ -355,7 +355,8 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         """
         Method to cancel the given payment.
         """
-        if self.method == 'manual' and self.state == 'in-progress':
+        if self.method == 'manual' and \
+                self.state in ('in-progress', 'authorized'):
             return True
         self.raise_user_error(
             'Cannot cancel self payments which are not manual and in-progress'
