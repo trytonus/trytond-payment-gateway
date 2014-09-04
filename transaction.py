@@ -355,7 +355,8 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         """
         Method to cancel the given payment.
         """
-        if self.method == 'manual' and self.state == 'in-progress':
+        if self.method == 'manual' and \
+                self.state in ('in-progress', 'authorized'):
             return True
         self.raise_user_error(
             'Cannot cancel self payments which are not manual and in-progress'
@@ -804,7 +805,7 @@ class PaymentProfile(ModelSQL, ModelView):
 
     def get_rec_name(self, name=None):
         if self.last_4_digits:
-            return self.gateway.name + ('xxxx ' * 3) + self.last_4_digits
+            return self.gateway.name + ' ' + ('xxxx ' * 3) + self.last_4_digits
         return 'Incomplete Card'
 
     @staticmethod
