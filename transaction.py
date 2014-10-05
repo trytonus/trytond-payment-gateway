@@ -706,7 +706,7 @@ class BaseCreditCardViewMixin(object):
         match = self.track1_re.match(track1)
         if match:
             # Track1 matched, extract info and send
-            assert match.group('FC') == 'B', 'Unknown card Format Code'
+            assert match.group('FC').upper() == 'B', 'Unknown card Format Code'
 
             res['owner'] = match.group('NAME')
             res['number'] = match.group('PAN')
