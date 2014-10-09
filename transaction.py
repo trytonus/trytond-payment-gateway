@@ -665,8 +665,8 @@ class BaseCreditCardViewMixin(object):
         'Expiry Year', size=4,
         states=WHEN_CNP, depends=['card_present'],
     )
-    csc = fields.Integer(
-        'Card Security Code (CVV/CVD)', states=WHEN_CNP,
+    csc = fields.Char(
+        'Card Security Code (CVV/CVD)', size=4, states=WHEN_CNP,
         depends=['card_present'], help='CVD/CVV/CVN'
     )
 
@@ -706,7 +706,7 @@ class BaseCreditCardViewMixin(object):
         match = self.track1_re.match(track1)
         if match:
             # Track1 matched, extract info and send
-            assert match.group('FC') == 'B', 'Unknown card Format Code'
+            assert match.group('FC').upper() == 'B', 'Unknown card Format Code'
 
             res['owner'] = match.group('NAME')
             res['number'] = match.group('PAN')
