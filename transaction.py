@@ -31,6 +31,10 @@ __all__ = [
 __metaclass__ = PoolMeta
 
 READONLY_IF_NOT_DRAFT = {'readonly': Eval('state') != 'draft'}
+STATES = {
+    'readonly': ~Eval('active', True),
+}
+DEPENDS = ['active']
 
 
 class PaymentGateway(ModelSQL, ModelView):
@@ -41,13 +45,26 @@ class PaymentGateway(ModelSQL, ModelView):
     """
     __name__ = 'payment_gateway.gateway'
 
-    name = fields.Char('Name', required=True, select=True)
-    journal = fields.Many2One('account.journal', 'Journal', required=True)
-    provider = fields.Selection('get_providers', 'Provider', required=True)
-    method = fields.Selection(
-        'get_methods', 'Method', required=True,
+    active = fields.Boolean('Active', select=True)
+    name = fields.Char(
+        'Name', required=True, select=True, states=STATES, depends=DEPENDS
     )
-    test = fields.Boolean('Test Account')
+    journal = fields.Many2One(
+        'account.journal', 'Journal', required=True,
+        states=STATES, depends=DEPENDS
+    )
+    provider = fields.Selection(
+        'get_providers', 'Provider', required=True,
+        states=STATES, depends=DEPENDS
+    )
+    method = fields.Selection(
+        'get_methods', 'Method', required=True, states=STATES, depends=DEPENDS
+    )
+    test = fields.Boolean('Test Account', states=STATES, depends=DEPENDS)
+
+    @staticmethod
+    def default_active():
+        return True
 
     @staticmethod
     def default_provider():
