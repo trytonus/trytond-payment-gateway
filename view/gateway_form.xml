@@ -2,6 +2,9 @@
 <!-- The COPYRIGHT file at the top level of
 this repository contains the full copyright notices and license terms. -->
 <form string="Payment Gateway">
+    <label name="active"/>
+    <field name="active"/>
+    <newline />
     <label name="name"/>
     <field name="name"/>
     <label name="journal"/>
