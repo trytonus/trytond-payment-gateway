@@ -6,4 +6,5 @@ this repository contains the full copyright notices and license terms. -->
     <field name="provider"/>
     <field name="method"/>
     <field name="journal"/>
+    <field name="active"/>
 </tree>
