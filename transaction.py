@@ -898,7 +898,7 @@ class AddPaymentProfile(Wizard):
 
         return res
 
-    def create_profile(self, provider_reference):
+    def create_profile(self, provider_reference, **kwargs):
         """
         A helper function that creates a profile from the card information
         that was entered into the View of the wizard. This helper could be
@@ -918,6 +918,7 @@ class AddPaymentProfile(Wizard):
             expiry_month=self.card_info.expiry_month,
             expiry_year=self.card_info.expiry_year,
             provider_reference=provider_reference,
+            **kwargs
         )
         profile.save()
         return profile
