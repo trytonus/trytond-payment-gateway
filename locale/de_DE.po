@@ -126,6 +126,10 @@ msgctxt "field:party.payment_profile.add_view,swipe_data:"
 msgid "Swipe Card"
 msgstr "Karte durchziehen"
 
+msgctxt "field:payment_gateway.gateway,active:"
+msgid "Active"
+msgstr "Aktiv"
+
 msgctxt "field:payment_gateway.gateway,create_date:"
 msgid "Create Date"
 msgstr "Erstellungsdatum"
