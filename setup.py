@@ -4,7 +4,7 @@
 
     Payment Gateway Setup
 
-    :copyright: (c) 2013-2014 by Openlabs Technologies & Consulting (P) Ltd.
+    :copyright: (c) 2013-2015 by Openlabs Technologies & Consulting (P) Ltd.
     :license: BSD, see LICENSE for more details
 
 '''
@@ -35,8 +35,7 @@ class SQLiteTest(Command):
         pass
 
     def run(self):
-        from trytond.config import CONFIG
-        CONFIG['db_type'] = 'sqlite'
+        os.environ['TRYTOND_DATABASE_URI'] = 'sqlite://'
         os.environ['DB_NAME'] = ':memory:'
 
         from tests import suite
