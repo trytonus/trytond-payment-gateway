@@ -1,0 +1,755 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:payment_gateway.transaction:"
+msgid "Only manual process can be processed."
+msgstr "Nur manuelle Vorgänge können durchgeführt werden"
+
+msgctxt "error:payment_gateway.transaction:"
+msgid "The feature %s is not avaialable for provider %s"
+msgstr "Feature %s ist für Provider %s nicht verfügbar"
+
+msgctxt "field:party.party,default_payment_profile:"
+msgid "Default Payment Profile"
+msgstr "Standardzahlungsprofil"
+
+msgctxt "field:party.party,payment_profiles:"
+msgid "Payment Profiles"
+msgstr "Zahlungsprofile"
+
+msgctxt "field:party.payment_profile,active:"
+msgid "Active"
+msgstr "Aktiv"
+
+msgctxt "field:party.payment_profile,address:"
+msgid "Address"
+msgstr "Adresse"
+
+msgctxt "field:party.payment_profile,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:party.payment_profile,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:party.payment_profile,expiry_month:"
+msgid "Expiry Month"
+msgstr "Verfallsmonat"
+
+msgctxt "field:party.payment_profile,expiry_year:"
+msgid "Expiry Year"
+msgstr "Verfallsjahr"
+
+msgctxt "field:party.payment_profile,gateway:"
+msgid "Gateway"
+msgstr "Gateway"
+
+msgctxt "field:party.payment_profile,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:party.payment_profile,last_4_digits:"
+msgid "Last 4 digits"
+msgstr "Letzte 4 Zahlen"
+
+msgctxt "field:party.payment_profile,party:"
+msgid "Party"
+msgstr "Partei"
+
+msgctxt "field:party.payment_profile,provider_reference:"
+msgid "Provider Reference"
+msgstr "Provider Beleg"
+
+msgctxt "field:party.payment_profile,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:party.payment_profile,sequence:"
+msgid "Sequence"
+msgstr "Reihenfolge"
+
+msgctxt "field:party.payment_profile,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:party.payment_profile,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:party.payment_profile.add_view,address:"
+msgid "Address"
+msgstr "Adresse"
+
+msgctxt "field:party.payment_profile.add_view,card_present:"
+msgid "Card is Present"
+msgstr "Karte vorhanden"
+
+msgctxt "field:party.payment_profile.add_view,csc:"
+msgid "Card Security Code (CVV/CVD)"
+msgstr "Karte Sicherheitscode (CVV/CVD)"
+
+msgctxt "field:party.payment_profile.add_view,expiry_month:"
+msgid "Expiry Month"
+msgstr "Verfallsmonat"
+
+msgctxt "field:party.payment_profile.add_view,expiry_year:"
+msgid "Expiry Year"
+msgstr "Verfallsjahr"
+
+msgctxt "field:party.payment_profile.add_view,gateway:"
+msgid "Gateway"
+msgstr "Gateway"
+
+msgctxt "field:party.payment_profile.add_view,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:party.payment_profile.add_view,number:"
+msgid "Card Number"
+msgstr "Kartennummer"
+
+msgctxt "field:party.payment_profile.add_view,owner:"
+msgid "Card Owner"
+msgstr "Kartenbesitzer"
+
+msgctxt "field:party.payment_profile.add_view,party:"
+msgid "Party"
+msgstr "Partei"
+
+msgctxt "field:party.payment_profile.add_view,provider:"
+msgid "Provider"
+msgstr "Provider"
+
+msgctxt "field:party.payment_profile.add_view,swipe_data:"
+msgid "Swipe Card"
+msgstr "Karte durchziehen"
+
+msgctxt "field:payment_gateway.gateway,active:"
+msgid "Active"
+msgstr "Aktiv"
+
+msgctxt "field:payment_gateway.gateway,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:payment_gateway.gateway,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:payment_gateway.gateway,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:payment_gateway.gateway,journal:"
+msgid "Journal"
+msgstr "Journal"
+
+msgctxt "field:payment_gateway.gateway,method:"
+msgid "Method"
+msgstr "Methode"
+
+msgctxt "field:payment_gateway.gateway,name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:payment_gateway.gateway,provider:"
+msgid "Provider"
+msgstr "Provider"
+
+msgctxt "field:payment_gateway.gateway,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:payment_gateway.gateway,test:"
+msgid "Test Account"
+msgstr "Testkonto"
+
+msgctxt "field:payment_gateway.gateway,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:payment_gateway.gateway,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:payment_gateway.transaction,address:"
+msgid "Address"
+msgstr "Adresse"
+
+msgctxt "field:payment_gateway.transaction,amount:"
+msgid "Amount"
+msgstr "Betrag"
+
+msgctxt "field:payment_gateway.transaction,company:"
+msgid "Company"
+msgstr "Unternehmen"
+
+msgctxt "field:payment_gateway.transaction,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:payment_gateway.transaction,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:payment_gateway.transaction,currency:"
+msgid "Currency"
+msgstr "Währung"
+
+msgctxt "field:payment_gateway.transaction,currency_digits:"
+msgid "Currency Digits"
+msgstr "Währung (signifikante Stellen)"
+
+msgctxt "field:payment_gateway.transaction,date:"
+msgid "Date"
+msgstr "Datum"
+
+msgctxt "field:payment_gateway.transaction,description:"
+msgid "Description"
+msgstr "Beschreibung"
+
+msgctxt "field:payment_gateway.transaction,gateway:"
+msgid "Gateway"
+msgstr "Gateway"
+
+msgctxt "field:payment_gateway.transaction,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:payment_gateway.transaction,logs:"
+msgid "Logs"
+msgstr "Logs"
+
+msgctxt "field:payment_gateway.transaction,method:"
+msgid "Payment Gateway Method"
+msgstr "Zahlungsgatewaymethode"
+
+msgctxt "field:payment_gateway.transaction,move:"
+msgid "Move"
+msgstr "Buchungssatz"
+
+msgctxt "field:payment_gateway.transaction,origin:"
+msgid "Origin"
+msgstr "Herkunft"
+
+msgctxt "field:payment_gateway.transaction,party:"
+msgid "Party"
+msgstr "Partei"
+
+msgctxt "field:payment_gateway.transaction,payment_profile:"
+msgid "Payment Profile"
+msgstr "Zahlungsprofil"
+
+msgctxt "field:payment_gateway.transaction,provider:"
+msgid "Provider"
+msgstr "Provider"
+
+msgctxt "field:payment_gateway.transaction,provider_reference:"
+msgid "Provider Reference"
+msgstr "Provider Beleg"
+
+msgctxt "field:payment_gateway.transaction,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:payment_gateway.transaction,shipping_address:"
+msgid "Shipping Address"
+msgstr "Lieferadresse"
+
+msgctxt "field:payment_gateway.transaction,state:"
+msgid "State"
+msgstr "Status"
+
+msgctxt "field:payment_gateway.transaction,uuid:"
+msgid "UUID"
+msgstr "UUID"
+
+msgctxt "field:payment_gateway.transaction,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:payment_gateway.transaction,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:payment_gateway.transaction.log,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:payment_gateway.transaction.log,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:payment_gateway.transaction.log,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:payment_gateway.transaction.log,is_system_generated:"
+msgid "Is System Generated"
+msgstr "durch das System generiert"
+
+msgctxt "field:payment_gateway.transaction.log,log:"
+msgid "Log"
+msgstr "Log"
+
+msgctxt "field:payment_gateway.transaction.log,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:payment_gateway.transaction.log,timestamp:"
+msgid "Event Timestamp"
+msgstr "Vorgang Zeitstempel"
+
+msgctxt "field:payment_gateway.transaction.log,transaction:"
+msgid "Transaction"
+msgstr "Transaktion"
+
+msgctxt "field:payment_gateway.transaction.log,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:payment_gateway.transaction.log,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,card_present:"
+msgid "Card is Present"
+msgstr "Karte vorhanden"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,csc:"
+msgid "Card Security Code (CVV/CVD)"
+msgstr "Karte Sicherheitscode (CVV/CVD)"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "Expiry Month"
+msgstr "Verfallsmonat"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,expiry_year:"
+msgid "Expiry Year"
+msgstr "Verfallsjahr"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,number:"
+msgid "Card Number"
+msgstr "Kartennummer"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,owner:"
+msgid "Card Owner"
+msgstr "Kartenbesitzer"
+
+msgctxt "field:payment_gateway.transaction.use_card.view,swipe_data:"
+msgid "Swipe Card"
+msgstr "Karte durchziehen"
+
+msgctxt "help:party.payment_profile.add_view,card_present:"
+msgid "If the card is present and the card can be swiped"
+msgstr "Ob eine Karte vorhanden ist und durchgezogen werden kann"
+
+msgctxt "help:party.payment_profile.add_view,csc:"
+msgid "CVD/CVV/CVN"
+msgstr "CVD/CVV/CVN"
+
+msgctxt "help:payment_gateway.transaction.use_card.view,card_present:"
+msgid "If the card is present and the card can be swiped"
+msgstr "Ob eine Karte vorhanden ist und durchgezogen werden kann"
+
+msgctxt "help:payment_gateway.transaction.use_card.view,csc:"
+msgid "CVD/CVV/CVN"
+msgstr "CVD/CVV/CVN"
+
+msgctxt "model:ir.action,name:act_gateway"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
+
+msgctxt "model:ir.action,name:act_payment_profile"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
+
+msgctxt "model:ir.action,name:act_transaction"
+msgid "Payment Gateway Transactions"
+msgstr "Zahlungsgateway Transaktionen"
+
+msgctxt "model:ir.action,name:wizard_add_payment_profile"
+msgid "Add payment profile"
+msgstr "Zahlungsprofil hinzufügen"
+
+msgctxt "model:ir.action,name:wizard_transaction_use_card"
+msgid "Use Card"
+msgstr "Karte verwenden"
+
+msgctxt "model:ir.action.act_window.domain,name:act_transaction_domain_all"
+msgid "All"
+msgstr "Alle"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_transaction_domain_authorized"
+msgid "Authorized"
+msgstr "Authorisiert"
+
+msgctxt "model:ir.action.act_window.domain,name:act_transaction_domain_draft"
+msgid "Draft"
+msgstr "Entwurf"
+
+msgctxt "model:ir.action.act_window.domain,name:act_transaction_domain_failed"
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+msgctxt ""
+"model:ir.action.act_window.domain,name:act_transaction_domain_inprogress"
+msgid "In-Progress"
+msgstr "In Bearbeitung"
+
+msgctxt "model:ir.ui.menu,name:menu_payment_gateway"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
+
+msgctxt "model:ir.ui.menu,name:menu_payment_transaction"
+msgid "Payment Gateway Transactions"
+msgstr "Zahlungsgateway Transaktionen"
+
+msgctxt "model:party.payment_profile,name:"
+msgid "Secure Payment Profile"
+msgstr "Sicheres Zahlungsprofil"
+
+msgctxt "model:party.payment_profile.add_view,name:"
+msgid "View for adding a payment profile"
+msgstr "Zahlungsprofil"
+
+msgctxt "model:payment_gateway.gateway,name:"
+msgid "Payment Gateway"
+msgstr "Zahlungsgateway"
+
+msgctxt "model:payment_gateway.transaction,name:"
+msgid "Gateway Transaction"
+msgstr "Gateway Transaktionen"
+
+msgctxt "model:payment_gateway.transaction.log,name:"
+msgid "Transaction Log"
+msgstr "Transaktionslog"
+
+msgctxt "model:payment_gateway.transaction.use_card.view,name:"
+msgid "View for putting in credit card information"
+msgstr "Karteninformation"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "01-January"
+msgstr "01-Januar"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "02-February"
+msgstr "02-Februar"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "03-March"
+msgstr "03-März"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "04-April"
+msgstr "04-April"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "05-May"
+msgstr "05-Mai"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "06-June"
+msgstr "06-Juni"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "07-July"
+msgstr "07-Juli"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "08-August"
+msgstr "08-August"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "09-September"
+msgstr "09-September"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "10-October"
+msgstr "10-Oktober"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "11-November"
+msgstr "11-November"
+
+msgctxt "selection:party.payment_profile,expiry_month:"
+msgid "12-December"
+msgstr "12-Dezember"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "01-January"
+msgstr "01-Januar"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "02-February"
+msgstr "02-Februar"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "03-March"
+msgstr "03-März"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "04-April"
+msgstr "04-April"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "05-May"
+msgstr "05-Mai"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "06-June"
+msgstr "06-Juni"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "07-July"
+msgstr "07-Juli"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "08-August"
+msgstr "08-August"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "09-September"
+msgstr "09-September"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "10-October"
+msgstr "10-Oktober"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "11-November"
+msgstr "11-November"
+
+msgctxt "selection:party.payment_profile.add_view,expiry_month:"
+msgid "12-December"
+msgstr "12-Dezember"
+
+msgctxt "selection:payment_gateway.transaction,state:"
+msgid "Authorized"
+msgstr "Autorisiert"
+
+msgctxt "selection:payment_gateway.transaction,state:"
+msgid "Canceled"
+msgstr "Annulliert"
+
+msgctxt "selection:payment_gateway.transaction,state:"
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+msgctxt "selection:payment_gateway.transaction,state:"
+msgid "Draft"
+msgstr "Entwurf"
+
+msgctxt "selection:payment_gateway.transaction,state:"
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+msgctxt "selection:payment_gateway.transaction,state:"
+msgid "In Progress"
+msgstr "In Bearbeitung"
+
+msgctxt "selection:payment_gateway.transaction,state:"
+msgid "Posted"
+msgstr "Festgeschrieben"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "01-January"
+msgstr "01-Januar"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "02-February"
+msgstr "02-Februar"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "03-March"
+msgstr "03-März"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "04-April"
+msgstr "04-April"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "05-May"
+msgstr "05-Mai"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "06-June"
+msgstr "06-Juni"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "07-July"
+msgstr "07-Juli"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "08-August"
+msgstr "08-August"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "09-September"
+msgstr "09-September"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "10-October"
+msgstr "10-Oktober"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "11-November"
+msgstr "11-November"
+
+msgctxt "selection:payment_gateway.transaction.use_card.view,expiry_month:"
+msgid "12-December"
+msgstr "12-Dezember"
+
+msgctxt "view:party.party:"
+msgid "Add payment profile"
+msgstr "Zahlungsprofil hinzufügen"
+
+msgctxt "view:party.party:"
+msgid "Payment Profiles"
+msgstr "Zahlungsprofile"
+
+msgctxt "view:party.payment_profile.add_view:"
+msgid "Add Payment Profile"
+msgstr "Zahlungsprofil hinzufügen"
+
+msgctxt "view:party.payment_profile:"
+msgid "Payment Profile"
+msgstr "Zahlungsprofil"
+
+msgctxt "view:party.payment_profile:"
+msgid "Payment Profiles"
+msgstr "Zahlungsprofile"
+
+msgctxt "view:payment_gateway.gateway:"
+msgid "Payment Gateway"
+msgstr "Zahlungsgateway"
+
+msgctxt "view:payment_gateway.gateway:"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
+
+msgctxt "view:payment_gateway.transaction.log:"
+msgid "Log Message"
+msgstr "Log Nachricht"
+
+msgctxt "view:payment_gateway.transaction.log:"
+msgid "Transaction Logs"
+msgstr "Transaktionslogs"
+
+msgctxt "view:payment_gateway.transaction.use_card.view:"
+msgid "Card Information"
+msgstr "Karteninformation"
+
+msgctxt "view:payment_gateway.transaction.use_card.view:"
+msgid "Card Present Transaction"
+msgstr "Karte Aktuelle Transaktion"
+
+msgctxt "view:payment_gateway.transaction.use_card.view:"
+msgid "Enter Card Information"
+msgstr "Karteninformation eingeben"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Are you sure to cancel the transaction?"
+msgstr "Transaktion wirklich abbrechen?"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Attempt to pre-authorise the transaction"
+msgstr "Versuch Vorautorisierung Transaktion"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Cancel"
+msgstr "Annullieren"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Capture"
+msgstr "Einziehen"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Enter Credit Card"
+msgstr "Kreditkarte eingeben"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "General"
+msgstr "Allgemein"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Logs"
+msgstr "Logs"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Other Information"
+msgstr "Sonstiges"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Post"
+msgstr "Festschreiben"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Pre _Authorize"
+msgstr "Vorautorisierung"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Process"
+msgstr "Ausführen"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Process the payment"
+msgstr "Zahlung durchführen"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Retry the trnsaction"
+msgstr "Transaktion wiederholen"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Settle"
+msgstr "Erledigen"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Transaction"
+msgstr "Transaktion"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Transactions"
+msgstr "Transaktionen"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Update the trnsaction status"
+msgstr "Den Transaktionsstatus aktualisieren"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "_Retry"
+msgstr "Wiederholen"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "_Update Status"
+msgstr "Status aktualisieren"
+
+msgctxt "wizard_button:party.party.payment_profile.add,card_info,add:"
+msgid "Add"
+msgstr "Hinzufügen"
+
+msgctxt "wizard_button:party.party.payment_profile.add,card_info,end:"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt ""
+"wizard_button:payment_gateway.transaction.use_card,card_info,authorize:"
+msgid "Authorize"
+msgstr "Autorisieren"
+
+msgctxt ""
+"wizard_button:payment_gateway.transaction.use_card,card_info,capture:"
+msgid "Capture"
+msgstr "Einziehen"
+
+msgctxt "wizard_button:payment_gateway.transaction.use_card,card_info,end:"
+msgid "Cancel"
+msgstr "Abbrechen"

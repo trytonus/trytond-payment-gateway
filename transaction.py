@@ -921,6 +921,11 @@ class AddPaymentProfile(Wizard):
             **kwargs
         )
         profile.save()
+
+        # Wizard session data is stored in database
+        # Make sure credit card info does not hit the database
+        self.card_info.number = None
+        self.card_info.csc = None
         return profile
 
     def transition_add(self):
@@ -992,6 +997,7 @@ class TransactionUseCard(Wizard):
             self.card_info
         )
 
+        self.clear_cc_info()
         return 'end'
 
     def transition_authorize(self):
@@ -1009,4 +1015,13 @@ class TransactionUseCard(Wizard):
             self.card_info
         )
 
+        self.clear_cc_info()
         return 'end'
+
+    def clear_cc_info(self):
+        """
+        Tryton stores Wizard session data while it's execution
+        We need to make sure credit card info does not hit the database
+        """
+        self.card_info.number = None
+        self.card_info.csc = None
