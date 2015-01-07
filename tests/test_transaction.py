@@ -2,7 +2,7 @@
 """
     test_transaction.py
 
-    :copyright: (C) 2014 by Openlabs Technologies & Consulting (P) Limited
+    :copyright: (C) 2015 by Openlabs Technologies & Consulting (P) Limited
     :license: BSD, see LICENSE for more details.
 """
 import unittest
@@ -113,7 +113,15 @@ class TestTransaction(unittest.TestCase):
         ], limit=1)
         if not accounts and not silent:
             raise Exception("Account not found")
-        return accounts[0] if accounts else False
+        if not accounts:
+            return None
+        account, = accounts
+
+        # Party required must be set to True for assigning party to
+        # account move lines as per 3.4 version changes
+        account.party_required = True
+        account.save()
+        return account
 
     def setup_defaults(self):
         """
