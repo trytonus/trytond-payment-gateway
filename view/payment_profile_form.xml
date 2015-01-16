@@ -1,25 +1,28 @@
 <?xml version="1.0"?>
 <!-- The COPYRIGHT file at the top level of
 this repository contains the full copyright notices and license terms. -->
-<form string="Payment Profile">
-    <label name="sequence"/>
-    <field name="sequence"/>
-    <label name="address"/>
-    <field name="address" xfill="1"/>
-    <label name="party"/>
-    <field name="party"/>
+<form string="Payment Profile" col="4">
+    <label name="active" />
+    <field name="active" />
+    <label name="sequence" />
+    <field name="sequence" />
+    <separator string="Party Details" id="party_details" colspan="4" />
+    <label name="party" />
+    <field name="party" />
+    <newline />
+    <label name="address" />
+    <field name="address" />
+    <separator string="Gateway" id="gateway" colspan="4"/>
     <label name="gateway"/>
     <field name="gateway"/>
+    <separator string="Card Details" id="card_details" colspan="4" />
     <label name="provider_reference"/>
     <field name="provider_reference"/>
-    <group colspan="4" col="6" id="card_data">
-        <label name="last_4_digits"/>
-        <field name="last_4_digits"/>
-        <label name="expiry_month"/>
-        <field name="expiry_month"/>
-        <label name="expiry_year"/>
-        <field name="expiry_year"/>
-        <label name="active"/>
-        <field name="active"/>
-    </group>
+    <label name="last_4_digits"/>
+    <field name="last_4_digits"/>
+    <newline />
+    <label name="expiry_month"/>
+    <field name="expiry_month"/>
+    <label name="expiry_year"/>
+    <field name="expiry_year"/>
 </form>
