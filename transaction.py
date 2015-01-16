@@ -807,8 +807,10 @@ class PaymentProfile(ModelSQL, ModelView):
         ('10', '10-October'),
         ('11', '11-November'),
         ('12', '12-December'),
-    ], 'Expiry Month', required=True)
-    expiry_year = fields.Char('Expiry Year', required=True, size=4)
+    ], 'Expiry Month', required=True, readonly=True)
+    expiry_year = fields.Char(
+        'Expiry Year', required=True, size=4, readonly=True
+    )
     active = fields.Boolean('Active', select=True)
 
     @staticmethod
