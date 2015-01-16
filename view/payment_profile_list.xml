@@ -8,5 +8,6 @@ this repository contains the full copyright notices and license terms. -->
     <field name="last_4_digits"/>
     <field name="expiry_month"/>
     <field name="expiry_year"/>
+    <field name="active"/>
 </tree>
 
