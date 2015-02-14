@@ -26,7 +26,8 @@ __all__ = [
     'PaymentGateway', 'PaymentTransaction',
     'TransactionLog', 'PaymentProfile', 'AddPaymentProfileView',
     'AddPaymentProfile', 'BaseCreditCardViewMixin', 'Party',
-    'TransactionUseCardView', 'TransactionUseCard',
+    'TransactionUseCardView', 'TransactionUseCard', 'PaymentGatewayResUser',
+    'User'
 ]
 __metaclass__ = PoolMeta
 
@@ -61,6 +62,10 @@ class PaymentGateway(ModelSQL, ModelView):
         'get_methods', 'Method', required=True, states=STATES, depends=DEPENDS
     )
     test = fields.Boolean('Test Account', states=STATES, depends=DEPENDS)
+
+    users = fields.Many2Many(
+        'payment_gateway.gateway-res.user', 'payment_gateway', 'user', 'Users'
+    )
 
     @staticmethod
     def default_active():
@@ -1027,3 +1032,26 @@ class TransactionUseCard(Wizard):
         """
         self.card_info.number = None
         self.card_info.csc = None
+
+
+class User:
+    __name__ = 'res.user'
+
+    payment_gateways = fields.Many2Many(
+        'payment_gateway.gateway-res.user', 'user', 'payment_gateway',
+        'Payment Gateways'
+    )
+
+
+class PaymentGatewayResUser(ModelSQL):
+    'Payment Gateway - Res User'
+    __name__ = 'payment_gateway.gateway-res.user'
+    _table = 'payment_gateway_gateway_res_user'
+
+    payment_gateway = fields.Many2One(
+        'payment_gateway.gateway', 'Payment Gateway', ondelete='CASCADE',
+        select=True, required=True
+    )
+    user = fields.Many2One(
+        'res.user', 'User', ondelete='RESTRICT', required=True
+    )
