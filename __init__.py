@@ -10,7 +10,8 @@
 from trytond.pool import Pool
 from .transaction import PaymentTransaction, TransactionLog, PaymentGateway, \
     PaymentProfile, AddPaymentProfileView, \
-    AddPaymentProfile, Party, TransactionUseCardView, TransactionUseCard
+    AddPaymentProfile, Party, TransactionUseCardView, TransactionUseCard, \
+    PaymentGatewayResUser, User
 from .dummy import PaymentGatewayDummy, AddPaymentProfileViewDummy, \
     AddPaymentProfileDummy, DummyTransaction
 from .manual import PaymentGatewaySelf, ManualSelfTransaction
@@ -32,6 +33,8 @@ def register():
         # Manualself run payment gateway
         PaymentGatewaySelf,
         ManualSelfTransaction,
+        PaymentGatewayResUser,
+        User,
         module='payment_gateway', type_='model'
     )
     Pool.register(

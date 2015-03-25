@@ -1,0 +1,7 @@
+<data>
+    <xpath expr="/form/notebook/page[@id='preferences']" position="after">
+      <page string="Payment Gateways" id="payment_gateways">
+          <field name="payment_gateways"/>
+      </page>
+    </xpath>
+</data>
