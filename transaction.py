@@ -230,7 +230,6 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             ('in-progress', 'authorized'),
             ('in-progress', 'completed'),
             ('in-progress', 'cancel'),
-            ('failed', 'in-progress'),
             ('authorized', 'cancel'),
             ('authorized', 'completed'),
             ('completed', 'posted'),
