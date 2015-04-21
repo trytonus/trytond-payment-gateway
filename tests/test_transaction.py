@@ -116,11 +116,6 @@ class TestTransaction(unittest.TestCase):
         if not accounts:
             return None
         account, = accounts
-
-        # Party required must be set to True for assigning party to
-        # account move lines as per 3.4 version changes
-        account.party_required = True
-        account.save()
         return account
 
     def setup_defaults(self):
