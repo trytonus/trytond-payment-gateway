@@ -555,7 +555,6 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         }, {
             'description': self.rec_name,
             'account': journal.debit_account.id,
-            'party': self.party.id,
             'debit': amount,
             'credit': Decimal('0.0'),
             'amount_second_currency': amount_second_currency,
