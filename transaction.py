@@ -66,6 +66,28 @@ class PaymentGateway(ModelSQL, ModelView):
     users = fields.Many2Many(
         'payment_gateway.gateway-res.user', 'payment_gateway', 'user', 'Users'
     )
+    configured = fields.Boolean('Configured ?', readonly=True)
+
+    @classmethod
+    def __setup__(cls):
+        super(PaymentGateway, cls).__setup__()
+        cls._buttons.update({
+            'test_gateway_configuration': {
+                'readonly': ~Bool(Eval('active')),
+            },
+        })
+
+    @classmethod
+    @ModelView.button
+    def test_gateway_configuration(cls, gateways):
+        for gateway in gateways:
+            journal = gateway.journal
+            configured = bool(
+                journal.debit_account and
+                not journal.debit_account.party_required
+            )
+            gateway.configured = configured
+            gateway.save()
 
     @staticmethod
     def default_active():
