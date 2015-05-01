@@ -469,6 +469,31 @@ class TestTransaction(unittest.TestCase):
                 self.assertEqual(self.party.receivable_today, -400)
                 self.assertEqual(self.cash_journal.debit_account.balance, 400)
 
+    def test_0250_gateway_configuration(self):
+        """
+        Test the configuration of payment gateway
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            gateway, = self.PaymentGateway.create([{
+                'name': 'Test Gateway',
+                'journal': self.cash_journal.id,
+                'provider': 'self',
+                'method': 'manual',
+            }])
+            self.PaymentGateway.test_gateway_configuration([gateway])
+            self.assertTrue(gateway.configured)
+
+            # Mark party required on journals's debit account and check if
+            # configuration is wrong
+            account = self.cash_journal.debit_account
+            account.party_required = True
+            account.save()
+
+            self.PaymentGateway.test_gateway_configuration([gateway])
+            self.assertFalse(gateway.configured)
+
 
 def suite():
     "Define suite"
