@@ -20,4 +20,7 @@ this repository contains the full copyright notices and license terms. -->
             <field name="users"/>
         </page>
     </notebook>
+    <label name="configured"/>
+    <field name="configured"/>
+    <button name="test_gateway_configuration" string="Test Configuration" colspan="2"/>
 </form>
