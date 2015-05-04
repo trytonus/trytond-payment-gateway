@@ -27,7 +27,7 @@ __all__ = [
     'TransactionLog', 'PaymentProfile', 'AddPaymentProfileView',
     'AddPaymentProfile', 'BaseCreditCardViewMixin', 'Party',
     'TransactionUseCardView', 'TransactionUseCard', 'PaymentGatewayResUser',
-    'User'
+    'User', 'AccountMove'
 ]
 __metaclass__ = PoolMeta
 
@@ -532,10 +532,36 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         except UserError, exc:
             log = 'Could not mark as done\n'
             log += unicode(exc)
+
+            # Delete the account move if there's one
+            # We need to do this because if we post transactions
+            # asyncronously using workers, the unwanted move will be
+            # commited causing duplicate moves
+            move_exists, move_number = self.delete_move_if_exists()
+            if move_exists:
+                log += "\nDeleted account move #%s" % move_number
+
             TransactionLog.create([{
                 'transaction': self,
                 'log': log
             }])
+
+    def delete_move_if_exists(self):
+        """
+        Delete the account move if there's one
+        """
+        Move = Pool().get('account.move')
+
+        move = Move.search([
+            ('origin', '=', '%s,%d' % (self.__name__, self.id)),
+            ('lines.party', '=', self.party.id),
+        ], limit=1)
+
+        if move:
+            number = move[0].number
+            Move.delete([move[0]])
+            return True, number
+        return False, None
 
     def create_move(self, date=None):
         """
@@ -588,6 +614,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'period': period_id,
             'date': date,
             'lines': [('create', lines)],
+            'origin': '%s,%d' % (self.__name__, self.id),
         }])
         Move.post([move])
 
@@ -1075,3 +1102,15 @@ class PaymentGatewayResUser(ModelSQL):
     user = fields.Many2One(
         'res.user', 'User', ondelete='RESTRICT', required=True
     )
+
+
+class AccountMove:
+    __name__ = 'account.move'
+
+    @classmethod
+    def _get_origin(cls):
+        res = super(AccountMove, cls)._get_origin()
+
+        if 'payment_gateway.transaction' not in res:
+            res.append('payment_gateway.transaction')
+        return res
