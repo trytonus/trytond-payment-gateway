@@ -494,6 +494,44 @@ class TestTransaction(unittest.TestCase):
             self.PaymentGateway.test_gateway_configuration([gateway])
             self.assertFalse(gateway.configured)
 
+    def test_0260_test_dummy_delete_move(self):
+        """
+        Test if the account move is deleted is transaction fails to post
+        using safe post
+        """
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
+            self.setup_defaults()
+
+            with Transaction().set_context(
+                    company=self.company.id, use_dummy=True):
+                gateway, = self.PaymentGateway.create([{
+                    'name': 'Dummy Gateway',
+                    'journal': self.cash_journal.id,
+                    'provider': 'dummy',
+                    'method': 'credit_card',
+                }])
+                # Mark party required so that move does not post
+                account = self.cash_journal.debit_account
+                account.party_required = True
+                account.save()
+
+                transaction, = self.PaymentGatewayTransaction.create([{
+                    'party': self.party.id,
+                    'address': self.party.addresses[0].id,
+                    'gateway': gateway.id,
+                    'amount': 400,
+                }])
+                self.assert_(transaction)
+
+                self.PaymentGatewayTransaction.capture([transaction])
+
+                # Test if transaction failed to post
+                self.assertEqual(transaction.state, 'completed')
+                # Check that the account move was deleted
+                self.assertEqual(len(transaction.logs), 1)
+                self.assertTrue(
+                    "Deleted account move" in transaction.logs[0].log)
+
 
 def suite():
     "Define suite"
