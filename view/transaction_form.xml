@@ -16,6 +16,9 @@ this repository contains the full copyright notices and license terms. -->
             <field name="party"/>
             <label name="address"/>
             <field name="address"/>
+            <label name="credit_account"/>
+            <field name="credit_account"/>
+            <newline />
             <label name="gateway"/>
             <field name="gateway"/>
             <label name="payment_profile"/>
