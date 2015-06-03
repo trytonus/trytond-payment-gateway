@@ -186,6 +186,7 @@ class TestTransaction(unittest.TestCase):
             with Transaction().set_context({'company': self.company.id}):
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -226,6 +227,7 @@ class TestTransaction(unittest.TestCase):
                 }])
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -253,6 +255,7 @@ class TestTransaction(unittest.TestCase):
                 }])
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -323,6 +326,7 @@ class TestTransaction(unittest.TestCase):
                 }])
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -352,6 +356,7 @@ class TestTransaction(unittest.TestCase):
                 }])
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -383,6 +388,7 @@ class TestTransaction(unittest.TestCase):
                 }])
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -411,6 +417,7 @@ class TestTransaction(unittest.TestCase):
             with Transaction().set_context({'company': self.company.id}):
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -454,6 +461,7 @@ class TestTransaction(unittest.TestCase):
             with Transaction().set_context({'company': self.company.id}):
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,
@@ -517,6 +525,7 @@ class TestTransaction(unittest.TestCase):
 
                 transaction, = self.PaymentGatewayTransaction.create([{
                     'party': self.party.id,
+                    'credit_account': self.party.account_receivable.id,
                     'address': self.party.addresses[0].id,
                     'gateway': gateway.id,
                     'amount': 400,

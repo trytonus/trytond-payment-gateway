@@ -11,6 +11,8 @@ import re
 from uuid import uuid4
 from decimal import Decimal
 from datetime import datetime
+from sql.functions import Trim, Substring
+from sql.operators import Concat
 
 import yaml
 from trytond.pool import Pool, PoolMeta
@@ -20,6 +22,7 @@ from trytond.wizard import Wizard, StateView, StateTransition, \
 from trytond.transaction import Transaction
 from trytond.exceptions import UserError
 from trytond.model import ModelSQL, ModelView, Workflow, fields
+from trytond import backend
 
 
 __all__ = [
@@ -209,6 +212,11 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         fields.Many2One('party.address', 'Shipping Address'),
         'get_shipping_address'
     )
+    credit_account = fields.Many2One(
+        'account.account', 'Credit Account',
+        states=READONLY_IF_NOT_DRAFT, depends=['state'],
+        required=True, select=True
+    )
 
     def get_rec_name(self, name=None):
         """
@@ -304,6 +312,73 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             }
         })
 
+        cls.credit_account.domain = [
+            ('company', '=', Eval('company', -1)),
+            ('kind', 'in', cls._credit_account_domain())
+        ]
+        cls.credit_account.depends += ['company']
+
+    @classmethod
+    def __register__(cls, module_name):
+        Party = Pool().get('party.party')
+        Model = Pool().get('ir.model')
+        ModelField = Pool().get('ir.model.field')
+        Property = Pool().get('ir.property')
+        TableHandler = backend.get('TableHandler')
+        cursor = Transaction().cursor
+        table = TableHandler(cursor, cls, module_name)
+
+        migration_needed = False
+        if not table.column_exist('credit_account'):
+            migration_needed = True
+
+        super(PaymentTransaction, cls).__register__(module_name)
+
+        if migration_needed and not Pool.test:
+            # Migration
+            # Set party's receivable account as the credit_account on
+            # transactions
+            transaction = cls.__table__()
+            party = Party.__table__()
+            property = Property.__table__()
+
+            account_model, = Model.search([
+                ('model', '=', 'party.party'),
+            ])
+            account_receivable_field, = ModelField.search([
+                ('model', '=', account_model.id),
+                ('name', '=', 'account_receivable'),
+                ('ttype', '=', 'many2one'),
+            ])
+
+            update = transaction.update(
+                columns=[transaction.credit_account],
+                values=[
+                    Trim(
+                        Substring(property.value, ',.*'), 'LEADING', ','
+                    ).cast(cls.credit_account.sql_type().base)
+                ],
+                from_=[party, property],
+                where=(
+                    transaction.party == party.id
+                ) & (
+                    property.res == Concat(Party.__name__ + ',', party.id)
+                ) & (
+                    property.field == account_receivable_field.id
+                ) & (
+                    property.company == transaction.company
+                )
+
+            )
+            cursor.execute(*update)
+
+    @classmethod
+    def _credit_account_domain(cls):
+        """
+        Return a list of account kind
+        """
+        return ['receivable']
+
     @staticmethod
     def default_uuid():
         return unicode(uuid4())
@@ -350,8 +425,11 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     def on_change_party(self):
         res = {
             'address': None,
+            'credit_account': None,
         }
         if self.party:
+            res['credit_account'] = self.party.account_receivable and \
+                    self.party.account_receivable.id
             try:
                 address = self.party.address_get(type='invoice')
             except AttributeError:
@@ -594,7 +672,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
 
         lines = [{
             'description': self.rec_name,
-            'account': self.party.account_receivable.id,
+            'account': self.credit_account.id,
             'party': self.party.id,
             'debit': Decimal('0.0'),
             'credit': amount,
