@@ -56,7 +56,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Tryton Payment Gateway'
-copyright = u'2014, Openlabs'
+copyright = u'2014, Fulfil.IO Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -217,7 +217,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'TrytonPaymentGateway.tex', u'Tryton Payment Gateway Documentation',
-   u'Openlabs', 'manual'),
+   u'Fulfil.IO Inc.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -247,7 +247,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'trytonpaymentgateway', u'Tryton Payment Gateway Documentation',
-     [u'Openlabs'], 1)
+     [u'Fulfil.IO Inc.'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -261,7 +261,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'TrytonPaymentGateway', u'Tryton Payment Gateway Documentation',
-   u'Openlabs', 'TrytonPaymentGateway', 'One line description of project.',
+   u'Fulfil.IO Inc.', 'TrytonPaymentGateway', 'One line description of project.',
    'Miscellaneous'),
 ]
 

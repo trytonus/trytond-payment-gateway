@@ -5,10 +5,6 @@
 
     Often payment modes are offline like cash, external credit card terminals
     etc. This gateway implements that
-
-    :copyright: (c) 2013-2014 by Openlabs Technologies & Consulting (P) Ltd.
-    :license: BSD, see LICENSE for more details
-
 '''
 from trytond.pool import PoolMeta
 

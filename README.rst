@@ -1,12 +1,6 @@
 Payment Gateway
 ===============
 
-.. image:: https://travis-ci.org/openlabs/payment-gateway.png?branch=develop
-  :target: https://travis-ci.org/openlabs/payment-gateway
-
-.. image:: https://coveralls.io/repos/openlabs/payment-gateway/badge.png?branch=develop
-  :target: https://coveralls.io/r/openlabs/payment-gateway
-
 A tryton base module to accept and process payments within Tryton using
 credit cards.
 
@@ -16,8 +10,8 @@ be written for each payment gateway. The currently available modules are:
 ================== ============================ ========================================================================
 Provider            Features                    
 ================== ============================ ========================================================================
-`Authorize.net`_    * Customer Profiles         * `Github <https://github.com/openlabs/payment-gateway-authorize-net>`_
-                    * Accept Cards              * Package: openlabs_payment_gateway_authorize_net
+`Authorize.net`_    * Customer Profiles         * `Github <https://github.com/fulfilio/trytondpayment-gateway-authorize-net>`_
+                    * Accept Cards              * Package: fio_payment_gateway_authorize_net
                     * Authorize and Settle
                     * Capture
 ================== ============================ ========================================================================

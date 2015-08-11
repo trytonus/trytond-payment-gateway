@@ -7,7 +7,7 @@ level of expertise in writing modules for Tryton.
 
 The examples in the case use Authorize.net as an example. The completely
 built module can be seen on github (`payment-gateway-authorize-net 
-<https://github.com/openlabs/payment-gateway-authorize-net>`_).
+<https://github.com/fulfilio/trytond-payment-gateway-authorize-net>`_).
 
 Step 0: Identify a qualified name for the provider
 --------------------------------------------------
