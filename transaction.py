@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-'''
-
-    Payment Gateway Transaction
-
-    :copyright: (c) 2013-2014 by Openlabs Technologies & Consulting (P) Ltd.
-    :license: BSD, see LICENSE for more details
-
-'''
 import re
 from uuid import uuid4
 from decimal import Decimal

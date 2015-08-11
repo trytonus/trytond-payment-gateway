@@ -20,10 +20,6 @@
                 'provider': 'dummy',
                 'method': 'credit_card',
             }])
-
-    :copyright: (c) 2013-2014 by Openlabs Technologies & Consulting (P) Ltd.
-    :license: BSD, see LICENSE for more details
-
 '''
 from trytond.pool import PoolMeta
 from trytond.transaction import Transaction

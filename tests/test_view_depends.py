@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-'''
-
-    Payment Gateway test for View and Depends
-
-    :copyright: (c) 2013-2014 by Openlabs Technologies & Consulting (P) Ltd.
-    :license: BSD, see LICENSE for more details
-
-'''
 import sys
 import os
 DIR = os.path.abspath(os.path.normpath(os.path.join(
