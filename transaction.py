@@ -116,6 +116,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         'Description', states=READONLY_IF_NOT_DRAFT,
         depends=['state']
     )
+    type = fields.Selection(
+        [
+            ('charge', 'Charge'),
+            ('refund', 'Refund'),
+        ], 'Type', required=True, select=True,
+    )
     origin = fields.Reference(
         'Origin', selection='get_origin', select=True,
         states=READONLY_IF_NOT_DRAFT,
@@ -209,6 +215,11 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         states=READONLY_IF_NOT_DRAFT, depends=['state'],
         required=True, select=True
     )
+    last_four_digits = fields.Char('Last Four Digits')
+
+    @staticmethod
+    def default_type():
+        return 'charge'
 
     def get_rec_name(self, name=None):
         """
@@ -225,7 +236,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     @classmethod
     def _get_origin(cls):
         'Return list of Model names for origin Reference'
-        return []
+        return ['payment_gateway.transaction']
 
     @classmethod
     def get_origin(cls):
@@ -316,6 +327,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         Model = Pool().get('ir.model')
         ModelField = Pool().get('ir.model.field')
         Property = Pool().get('ir.property')
+        PaymentProfile = Pool().get('party.payment_profile')
         TableHandler = backend.get('TableHandler')
         cursor = Transaction().cursor
         table = TableHandler(cursor, cls, module_name)
@@ -323,6 +335,10 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         migration_needed = False
         if not table.column_exist('credit_account'):
             migration_needed = True
+
+        migrate_last_four_digits = False
+        if not table.column_exist('last_four_digits'):
+            migrate_last_four_digits = True
 
         super(PaymentTransaction, cls).__register__(module_name)
 
@@ -364,6 +380,16 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             )
             cursor.execute(*update)
 
+        if migrate_last_four_digits and not Pool.test:
+            transaction = cls.__table__()
+            payment_profile = PaymentProfile.__table__()
+            cursor.execute(*transaction.update(
+                columns=[transaction.last_four_digits],
+                values=[payment_profile.last_4_digits],
+                from_=[payment_profile],
+                where=(transaction.payment_profile == payment_profile.id)
+            ))
+
     @classmethod
     def _credit_account_domain(cls):
         """
@@ -404,6 +430,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'provider_reference': None,
             'move': None,
             'logs': None,
+            'state': 'draft',
         })
         return super(PaymentTransaction, cls).copy(records, default)
 
@@ -662,19 +689,20 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             amount_second_currency = self.amount
             second_currency = self.currency
 
+        refund = self.type == 'refund'
         lines = [{
             'description': self.rec_name,
             'account': self.credit_account.id,
             'party': self.party.id,
-            'debit': Decimal('0.0'),
-            'credit': amount,
+            'debit': Decimal('0.0') if not refund else amount,
+            'credit': Decimal('0.0') if refund else amount,
             'amount_second_currency': amount_second_currency,
             'second_currency': second_currency,
         }, {
             'description': self.rec_name,
             'account': journal.debit_account.id,
-            'debit': amount,
-            'credit': Decimal('0.0'),
+            'debit': Decimal('0.0') if refund else amount,
+            'credit': Decimal('0.0') if not refund else amount,
             'amount_second_currency': amount_second_currency,
             'second_currency': second_currency,
         }]
@@ -707,6 +735,25 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         appropriate address in transaction.
         """
         return None
+
+    def create_refund(self, amount=None):
+        refund_transaction, = self.copy([self])
+
+        refund_transaction.type = 'refund'
+        refund_transaction.amount = amount or self.amount
+        refund_transaction.origin = self
+        refund_transaction.save()
+
+        return refund_transaction
+
+    def refund(self):
+        method_name = 'refund_%s' % self.gateway.provider
+        if not hasattr(self, method_name):
+            self.raise_user_error(
+                'feature_not_available'
+                ('refund', self.gateway.provider)
+            )
+        getattr(self.create_refund(), method_name)()
 
 
 class TransactionLog(ModelSQL, ModelView):
