@@ -3,7 +3,7 @@
 this repository contains the full copyright notices and license terms. -->
 <form string="Transaction Logs">
     <label name="timestamp"/>
-    <field name="timestamp"/>
+    <field name="timestamp" widget="date"/>
     <label name="transaction"/>
     <field name="transaction"/>
     <separator id="log" colspan="4" string="Log Message"/>

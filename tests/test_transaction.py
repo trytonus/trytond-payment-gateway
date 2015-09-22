@@ -3,16 +3,20 @@ import unittest
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from trytond.tests.test_tryton import DB_NAME, USER, CONTEXT, POOL
+from trytond.tests.test_tryton import (
+    DB_NAME, USER, CONTEXT, POOL, ModuleTestCase
+)
 import trytond.tests.test_tryton
 from trytond.transaction import Transaction
 from trytond.exceptions import UserError
 
 
-class TestTransaction(unittest.TestCase):
+class TestTransaction(ModuleTestCase):
     """
     Test transaction
     """
+
+    module = 'payment_gateway'
 
     def setUp(self):
         """
