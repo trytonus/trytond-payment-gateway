@@ -8,7 +8,7 @@ from sql.operators import Concat
 
 import yaml
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, If, Bool
+from trytond.pyson import Eval, If, Bool, In, Equal
 from trytond.wizard import Wizard, StateView, StateTransition, \
     Button
 from trytond.transaction import Transaction
@@ -234,6 +234,23 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         )
 
     @classmethod
+    def view_attributes(cls):
+        return super(PaymentTransaction, cls).view_attributes() + [(
+            '/tree', 'colors', If(
+                In(
+                    Eval('state', ''),
+                    ['in-progress', 'authorized', 'completed']
+                ),
+                'blue',
+                If(
+                    In(Eval('state', ''), ['failed', 'cancel']),
+                    'red',
+                    If(Equal(Eval('state', ''), 'posted'), 'green', 'black')
+                )
+            )
+        )]
+
+    @classmethod
     def _get_origin(cls):
         'Return list of Model names for origin Reference'
         return ['payment_gateway.transaction']
@@ -442,30 +459,23 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
 
     @fields.depends('party')
     def on_change_party(self):
-        res = {
-            'address': None,
-            'credit_account': None,
-        }
         if self.party:
-            res['credit_account'] = self.party.account_receivable and \
-                    self.party.account_receivable.id
+            self.credit_account = self.party.account_receivable and \
+                    self.party.account_receivable.id or None
             try:
                 address = self.party.address_get(type='invoice')
             except AttributeError:
                 # account_invoice module is not installed
                 pass
             else:
-                res['address'] = address.id
-                res['address.rec_name'] = address.rec_name
-        return res
+                self.address = address.id
+                self.address.rec_name = address.rec_name
 
-    @fields.depends('payment_profile')
+    @fields.depends('payment_profile', 'address')
     def on_change_payment_profile(self):
-        res = {}
         if self.payment_profile:
-            res['address'] = self.payment_profile.address.id
-            res['address.rec_name'] = self.payment_profile.address.rec_name
-        return res
+            self.address = self.payment_profile.address.id
+            self.address.rec_name = self.payment_profile.address.rec_name
 
     def get_provider(self, name=None):
         """
@@ -482,11 +492,8 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     @fields.depends('gateway')
     def on_change_gateway(self):
         if self.gateway:
-            return {
-                'provider': self.gateway.provider,
-                'method': self.gateway.method,
-            }
-        return {}
+            self.provider = self.gateway.provider
+            self.method = self.gateway.method
 
     def on_change_with_provider(self):
         return self.get_provider()
@@ -877,30 +884,25 @@ class BaseCreditCardViewMixin(object):
         """
         Try to parse the track1 and track2 data into Credit card information
         """
-        res = {}
-
         try:
             track1, track2 = self.swipe_data.split(';')
         except ValueError:
-            return {
-                'owner': '',
-                'number': '',
-                'expiry_month': '',
-                'expiry_year': '',
-            }
+            self.owner = ''
+            self.number = ''
+            self.expiry_month = ''
+            self.expiry_year = ''
 
         match = self.track1_re.match(track1)
         if match:
             # Track1 matched, extract info and send
             assert match.group('FC').upper() == 'B', 'Unknown card Format Code'
 
-            res['owner'] = match.group('NAME')
-            res['number'] = match.group('PAN')
-            res['expiry_month'] = match.group('MM')
-            res['expiry_year'] = '20' + match.group('YY')
+            self.owner = match.group('NAME')
+            self.number = match.group('PAN')
+            self.expiry_month = match.group('MM')
+            self.expiry_year = '20' + match.group('YY')
 
         # TODO: Match track 2
-        return res
 
 
 class Party:
