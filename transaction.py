@@ -8,7 +8,7 @@ from sql.operators import Concat
 
 import yaml
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, If, Bool
+from trytond.pyson import Eval, If, Bool, In, Equal
 from trytond.wizard import Wizard, StateView, StateTransition, \
     Button
 from trytond.transaction import Transaction
@@ -116,6 +116,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         'Description', states=READONLY_IF_NOT_DRAFT,
         depends=['state']
     )
+    type = fields.Selection(
+        [
+            ('charge', 'Charge'),
+            ('refund', 'Refund'),
+        ], 'Type', required=True, select=True,
+    )
     origin = fields.Reference(
         'Origin', selection='get_origin', select=True,
         states=READONLY_IF_NOT_DRAFT,
@@ -209,6 +215,11 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         states=READONLY_IF_NOT_DRAFT, depends=['state'],
         required=True, select=True
     )
+    last_four_digits = fields.Char('Last Four Digits')
+
+    @staticmethod
+    def default_type():
+        return 'charge'
 
     def get_rec_name(self, name=None):
         """
@@ -223,9 +234,26 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         )
 
     @classmethod
+    def view_attributes(cls):
+        return super(PaymentTransaction, cls).view_attributes() + [(
+            '/tree', 'colors', If(
+                In(
+                    Eval('state', ''),
+                    ['in-progress', 'authorized', 'completed']
+                ),
+                'blue',
+                If(
+                    In(Eval('state', ''), ['failed', 'cancel']),
+                    'red',
+                    If(Equal(Eval('state', ''), 'posted'), 'green', 'black')
+                )
+            )
+        )]
+
+    @classmethod
     def _get_origin(cls):
         'Return list of Model names for origin Reference'
-        return []
+        return ['payment_gateway.transaction']
 
     @classmethod
     def get_origin(cls):
@@ -316,6 +344,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         Model = Pool().get('ir.model')
         ModelField = Pool().get('ir.model.field')
         Property = Pool().get('ir.property')
+        PaymentProfile = Pool().get('party.payment_profile')
         TableHandler = backend.get('TableHandler')
         cursor = Transaction().cursor
         table = TableHandler(cursor, cls, module_name)
@@ -323,6 +352,10 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         migration_needed = False
         if not table.column_exist('credit_account'):
             migration_needed = True
+
+        migrate_last_four_digits = False
+        if not table.column_exist('last_four_digits'):
+            migrate_last_four_digits = True
 
         super(PaymentTransaction, cls).__register__(module_name)
 
@@ -364,6 +397,16 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             )
             cursor.execute(*update)
 
+        if migrate_last_four_digits and not Pool.test:
+            transaction = cls.__table__()
+            payment_profile = PaymentProfile.__table__()
+            cursor.execute(*transaction.update(
+                columns=[transaction.last_four_digits],
+                values=[payment_profile.last_4_digits],
+                from_=[payment_profile],
+                where=(transaction.payment_profile == payment_profile.id)
+            ))
+
     @classmethod
     def _credit_account_domain(cls):
         """
@@ -404,6 +447,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'provider_reference': None,
             'move': None,
             'logs': None,
+            'state': 'draft',
         })
         return super(PaymentTransaction, cls).copy(records, default)
 
@@ -415,30 +459,23 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
 
     @fields.depends('party')
     def on_change_party(self):
-        res = {
-            'address': None,
-            'credit_account': None,
-        }
         if self.party:
-            res['credit_account'] = self.party.account_receivable and \
-                    self.party.account_receivable.id
+            self.credit_account = self.party.account_receivable and \
+                    self.party.account_receivable.id or None
             try:
                 address = self.party.address_get(type='invoice')
             except AttributeError:
                 # account_invoice module is not installed
                 pass
             else:
-                res['address'] = address.id
-                res['address.rec_name'] = address.rec_name
-        return res
+                self.address = address.id
+                self.address.rec_name = address.rec_name
 
-    @fields.depends('payment_profile')
+    @fields.depends('payment_profile', 'address')
     def on_change_payment_profile(self):
-        res = {}
         if self.payment_profile:
-            res['address'] = self.payment_profile.address.id
-            res['address.rec_name'] = self.payment_profile.address.rec_name
-        return res
+            self.address = self.payment_profile.address.id
+            self.address.rec_name = self.payment_profile.address.rec_name
 
     def get_provider(self, name=None):
         """
@@ -455,11 +492,8 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     @fields.depends('gateway')
     def on_change_gateway(self):
         if self.gateway:
-            return {
-                'provider': self.gateway.provider,
-                'method': self.gateway.method,
-            }
-        return {}
+            self.provider = self.gateway.provider
+            self.method = self.gateway.method
 
     def on_change_with_provider(self):
         return self.get_provider()
@@ -662,19 +696,20 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             amount_second_currency = self.amount
             second_currency = self.currency
 
+        refund = self.type == 'refund'
         lines = [{
             'description': self.rec_name,
             'account': self.credit_account.id,
             'party': self.party.id,
-            'debit': Decimal('0.0'),
-            'credit': amount,
+            'debit': Decimal('0.0') if not refund else amount,
+            'credit': Decimal('0.0') if refund else amount,
             'amount_second_currency': amount_second_currency,
             'second_currency': second_currency,
         }, {
             'description': self.rec_name,
             'account': journal.debit_account.id,
-            'debit': amount,
-            'credit': Decimal('0.0'),
+            'debit': Decimal('0.0') if refund else amount,
+            'credit': Decimal('0.0') if not refund else amount,
             'amount_second_currency': amount_second_currency,
             'second_currency': second_currency,
         }]
@@ -707,6 +742,25 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         appropriate address in transaction.
         """
         return None
+
+    def create_refund(self, amount=None):
+        refund_transaction, = self.copy([self])
+
+        refund_transaction.type = 'refund'
+        refund_transaction.amount = amount or self.amount
+        refund_transaction.origin = self
+        refund_transaction.save()
+
+        return refund_transaction
+
+    def refund(self):
+        method_name = 'refund_%s' % self.gateway.provider
+        if not hasattr(self, method_name):
+            self.raise_user_error(
+                'feature_not_available'
+                ('refund', self.gateway.provider)
+            )
+        getattr(self.create_refund(), method_name)()
 
 
 class TransactionLog(ModelSQL, ModelView):
@@ -830,30 +884,25 @@ class BaseCreditCardViewMixin(object):
         """
         Try to parse the track1 and track2 data into Credit card information
         """
-        res = {}
-
         try:
             track1, track2 = self.swipe_data.split(';')
         except ValueError:
-            return {
-                'owner': '',
-                'number': '',
-                'expiry_month': '',
-                'expiry_year': '',
-            }
+            self.owner = ''
+            self.number = ''
+            self.expiry_month = ''
+            self.expiry_year = ''
 
         match = self.track1_re.match(track1)
         if match:
             # Track1 matched, extract info and send
             assert match.group('FC').upper() == 'B', 'Unknown card Format Code'
 
-            res['owner'] = match.group('NAME')
-            res['number'] = match.group('PAN')
-            res['expiry_month'] = match.group('MM')
-            res['expiry_year'] = '20' + match.group('YY')
+            self.owner = match.group('NAME')
+            self.number = match.group('PAN')
+            self.expiry_month = match.group('MM')
+            self.expiry_year = '20' + match.group('YY')
 
         # TODO: Match track 2
-        return res
 
 
 class Party:

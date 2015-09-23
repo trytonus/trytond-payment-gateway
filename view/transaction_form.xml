@@ -3,13 +3,15 @@
 this repository contains the full copyright notices and license terms. -->
 <form string="Transaction" cursor="party">
     <label name="uuid"/>
-    <field name="uuid" xfill="1"/>  
-    <label name="provider_reference"/>
-    <field name="provider_reference"/>  
+    <field name="uuid" xfill="1"/>
+    <label name="type"/>
+    <field name="type"/>
     <label name="description"/>
     <field name="description"/>  
     <label name="origin"/>
-    <field name="origin"/>  
+    <field name="origin"/>
+    <label name="provider_reference"/>
+    <field name="provider_reference"/>
     <notebook colspan="4">
         <page string="General" id="general">
             <label name="party"/>
