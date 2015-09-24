@@ -3,7 +3,7 @@ from trytond.pool import Pool
 from .transaction import PaymentTransaction, TransactionLog, PaymentGateway, \
     PaymentProfile, AddPaymentProfileView, \
     AddPaymentProfile, Party, TransactionUseCardView, TransactionUseCard, \
-    PaymentGatewayResUser, User, AccountMove
+    PaymentGatewayResUser, User, AccountMove, CreateRefund
 from .dummy import PaymentGatewayDummy, AddPaymentProfileViewDummy, \
     AddPaymentProfileDummy, DummyTransaction
 from .manual import PaymentGatewaySelf, ManualSelfTransaction
@@ -34,5 +34,6 @@ def register():
         AddPaymentProfile,
         AddPaymentProfileDummy,
         TransactionUseCard,
+        CreateRefund,
         module='payment_gateway', type_='wizard'
     )
