@@ -10,7 +10,7 @@ import yaml
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval, If, Bool, In, Equal
 from trytond.wizard import Wizard, StateView, StateTransition, \
-    Button
+    Button, StateAction
 from trytond.transaction import Transaction
 from trytond.exceptions import UserError
 from trytond.model import ModelSQL, ModelView, Workflow, fields
@@ -22,7 +22,7 @@ __all__ = [
     'TransactionLog', 'PaymentProfile', 'AddPaymentProfileView',
     'AddPaymentProfile', 'BaseCreditCardViewMixin', 'Party',
     'TransactionUseCardView', 'TransactionUseCard', 'PaymentGatewayResUser',
-    'User', 'AccountMove'
+    'User', 'AccountMove', 'CreateRefund'
 ]
 __metaclass__ = PoolMeta
 
@@ -288,7 +288,8 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'process': {
                 'invisible': ~(
                     (Eval('state') == 'draft') &
-                    (Eval('method') == 'manual')
+                    (Eval('method') == 'manual') &
+                    (Eval('type') == 'charge')
                 ),
             },
             'cancel': {
@@ -298,27 +299,36 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
                 'invisible': ~(
                     (Eval('state') == 'draft') &
                     Eval('payment_profile', True) &
-                    (Eval('method') == 'credit_card')
+                    (Eval('method') == 'credit_card') &
+                    (Eval('type') == 'charge')
                 ),
             },
             'settle': {
                 'invisible': ~(
                     (Eval('state') == 'authorized') &
-                    (Eval('method') == 'credit_card')
+                    (Eval('method') == 'credit_card') &
+                    (Eval('type') == 'charge')
                 ),
             },
             'retry': {
-                'invisible': ~(Eval('state') == 'failed'),
+                'invisible': ~(
+                    (Eval('state') == 'failed') &
+                    (Eval('type') == 'charge')
+                )
             },
             'capture': {
                 'invisible': ~(
                     (Eval('state') == 'draft') &
                     Eval('payment_profile', True) &
-                    (Eval('method') == 'credit_card')
+                    (Eval('method') == 'credit_card') &
+                    (Eval('type') == 'charge')
                 ),
             },
             'post': {
-                'invisible': ~(Eval('state') == 'completed'),
+                'invisible': ~(
+                    (Eval('state') == 'completed') &
+                    (Eval('type') == 'charge')
+                )
             },
             'use_card': {
                 'invisible': ~(
@@ -329,6 +339,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             },
             'update_status': {
                 'invisible': ~Eval('state').in_(['in-progress'])
+            },
+            'refund': {
+                'invisible': ~(
+                    (Eval('type') == 'refund') &
+                    (Eval('state') == 'draft')
+                )
             }
         })
 
@@ -514,6 +530,9 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     @Workflow.transition('cancel')
     def cancel(cls, transactions):
         for transaction in transactions:
+            if transaction.type == 'refund':
+                continue
+
             method_name = 'cancel_%s' % transaction.gateway.provider
             if not hasattr(transaction, method_name):
                 cls.raise_user_error(
@@ -604,6 +623,20 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         for transaction in transactions:
             if not transaction.move:
                 transaction.create_move()
+
+    @classmethod
+    @ModelView.button
+    def refund(cls, transactions):
+        for transaction in transactions:
+            assert transaction.type == 'refund', \
+                "Transaction type must be refund"
+            method_name = 'refund_%s' % transaction.gateway.provider
+            if not hasattr(transaction, method_name):
+                cls.raise_user_error(
+                    'feature_not_available'
+                    ('refund', transaction.gateway.provider)
+                )
+            getattr(transaction, method_name)()
 
     @classmethod
     @ModelView.button
@@ -744,6 +777,8 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         return None
 
     def create_refund(self, amount=None):
+        assert self.type == 'charge', "Transaction type must be charge"
+
         refund_transaction, = self.copy([self])
 
         refund_transaction.type = 'refund'
@@ -752,15 +787,6 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         refund_transaction.save()
 
         return refund_transaction
-
-    def refund(self):
-        method_name = 'refund_%s' % self.gateway.provider
-        if not hasattr(self, method_name):
-            self.raise_user_error(
-                'feature_not_available'
-                ('refund', self.gateway.provider)
-            )
-        getattr(self.create_refund(), method_name)()
 
 
 class TransactionLog(ModelSQL, ModelView):
@@ -1233,3 +1259,28 @@ class AccountMove:
         if 'payment_gateway.transaction' not in res:
             res.append('payment_gateway.transaction')
         return res
+
+
+class CreateRefund(Wizard):
+    "Create Refund"
+    __name__ = "payment_gateway.transaction.create_refund"
+    start_state = 'open'
+
+    open = StateAction('payment_gateway.act_transaction')
+
+    def do_open(self, action):
+        GatewayTransaction = Pool().get('payment_gateway.transaction')
+
+        transactions = GatewayTransaction.browse(
+            Transaction().context['active_ids']
+        )
+
+        refund_transactions = []
+        for transaction in transactions:
+            refund_transactions.append(transaction.create_refund())
+
+        data = {'res_id': map(int, refund_transactions)}
+        return action, data
+
+    def transition_open(self):
+        return 'end'

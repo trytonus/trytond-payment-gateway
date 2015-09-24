@@ -69,7 +69,11 @@ this repository contains the full copyright notices and license terms. -->
         <button name="update_status"
             string="_Update Status"
             help="Update the trnsaction status"
-            icon="tryton-refresh"/>            
+            icon="tryton-refresh"/>
+        <button name="refund"
+            string="Refund"
+            help="Refund the transaction"
+            icon="tryton-ok"/>
     </group>    
 
 </form>
