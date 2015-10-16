@@ -6,6 +6,7 @@ this repository contains the full copyright notices and license terms. -->
     <field name="date"/>
     <field name="uuid"/>
     <field name="party"/>
+    <field name="type"/>
     <field name="amount"/>
     <field name="currency"/>
     <field name="gateway"/>
