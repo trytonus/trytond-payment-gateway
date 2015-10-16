@@ -200,5 +200,15 @@
             <field name="inherit" ref="res.user_view_form" />
             <field name="name">user_form</field>
         </record>
+        <record model="ir.action.wizard" id="wizard_create_refund">
+            <field name="name">Create Refund</field>
+            <field name="wiz_name">payment_gateway.transaction.create_refund</field>
+            <field name="model">payment_gateway.transaction</field>
+        </record>
+        <record model="ir.action.keyword" id="keyword_create_refund">
+            <field name="keyword">form_action</field>
+            <field name="model">payment_gateway.transaction,-1</field>
+            <field name="action" ref="wizard_create_refund"/>
+        </record>
     </data>
 </tryton>
