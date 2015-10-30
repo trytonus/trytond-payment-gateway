@@ -1,4 +1,4 @@
-# 
+#
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
@@ -130,6 +130,10 @@ msgctxt "field:payment_gateway.gateway,active:"
 msgid "Active"
 msgstr "Aktiv"
 
+msgctxt "field:payment_gateway.gateway,configured:"
+msgid "Configured ?"
+msgstr "Konfiguriert"
+
 msgctxt "field:payment_gateway.gateway,create_date:"
 msgid "Create Date"
 msgstr "Erstellungsdatum"
@@ -166,11 +170,47 @@ msgctxt "field:payment_gateway.gateway,test:"
 msgid "Test Account"
 msgstr "Testkonto"
 
+msgctxt "field:payment_gateway.gateway,users:"
+msgid "Users"
+msgstr "Benutzer"
+
 msgctxt "field:payment_gateway.gateway,write_date:"
 msgid "Write Date"
 msgstr "Zuletzt geändert"
 
 msgctxt "field:payment_gateway.gateway,write_uid:"
+msgid "Write User"
+msgstr "Letzte Änderung durch"
+
+msgctxt "field:payment_gateway.gateway-res.user,create_date:"
+msgid "Create Date"
+msgstr "Erstellungsdatum"
+
+msgctxt "field:payment_gateway.gateway-res.user,create_uid:"
+msgid "Create User"
+msgstr "Erstellt durch"
+
+msgctxt "field:payment_gateway.gateway-res.user,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:payment_gateway.gateway-res.user,payment_gateway:"
+msgid "Payment Gateway"
+msgstr "Zahlungsgateway"
+
+msgctxt "field:payment_gateway.gateway-res.user,rec_name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:payment_gateway.gateway-res.user,user:"
+msgid "User"
+msgstr "Benutzer"
+
+msgctxt "field:payment_gateway.gateway-res.user,write_date:"
+msgid "Write Date"
+msgstr "Zuletzt geändert"
+
+msgctxt "field:payment_gateway.gateway-res.user,write_uid:"
 msgid "Write User"
 msgstr "Letzte Änderung durch"
 
@@ -193,6 +233,10 @@ msgstr "Erstellungsdatum"
 msgctxt "field:payment_gateway.transaction,create_uid:"
 msgid "Create User"
 msgstr "Erstellt durch"
+
+msgctxt "field:payment_gateway.transaction,credit_account:"
+msgid "Credit Account"
+msgstr "Habenkonto"
 
 msgctxt "field:payment_gateway.transaction,currency:"
 msgid "Currency"
@@ -346,6 +390,10 @@ msgctxt "field:payment_gateway.transaction.use_card.view,swipe_data:"
 msgid "Swipe Card"
 msgstr "Karte durchziehen"
 
+msgctxt "field:res.user,payment_gateways:"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
+
 msgctxt "help:party.payment_profile.add_view,card_present:"
 msgid "If the card is present and the card can be swiped"
 msgstr "Ob eine Karte vorhanden ist und durchgezogen werden kann"
@@ -423,6 +471,10 @@ msgstr "Zahlungsprofil"
 msgctxt "model:payment_gateway.gateway,name:"
 msgid "Payment Gateway"
 msgstr "Zahlungsgateway"
+
+msgctxt "model:payment_gateway.gateway-res.user,name:"
+msgid "Payment Gateway - Res User"
+msgstr "Zahlungsgateway - Benutzerverwaltung"
 
 msgctxt "model:payment_gateway.transaction,name:"
 msgid "Gateway Transaction"
@@ -621,6 +673,18 @@ msgid "Add Payment Profile"
 msgstr "Zahlungsprofil hinzufügen"
 
 msgctxt "view:party.payment_profile:"
+msgid "Card Details"
+msgstr "Kartendetails"
+
+msgctxt "view:party.payment_profile:"
+msgid "Gateway"
+msgstr "Gateway"
+
+msgctxt "view:party.payment_profile:"
+msgid "Party Details"
+msgstr "Parteidetails"
+
+msgctxt "view:party.payment_profile:"
 msgid "Payment Profile"
 msgstr "Zahlungsprofil"
 
@@ -635,6 +699,14 @@ msgstr "Zahlungsgateway"
 msgctxt "view:payment_gateway.gateway:"
 msgid "Payment Gateways"
 msgstr "Zahlungsgateways"
+
+msgctxt "view:payment_gateway.gateway:"
+msgid "Test Configuration"
+msgstr "Konfiguration testen"
+
+msgctxt "view:payment_gateway.gateway:"
+msgid "Users"
+msgstr "Benutzer"
 
 msgctxt "view:payment_gateway.transaction.log:"
 msgid "Log Message"
@@ -705,6 +777,14 @@ msgid "Process the payment"
 msgstr "Zahlung durchführen"
 
 msgctxt "view:payment_gateway.transaction:"
+msgid "Refund"
+msgstr "Erstatten"
+
+msgctxt "view:payment_gateway.transaction:"
+msgid "Refund the transaction"
+msgstr "Transaktion erstatten"
+
+msgctxt "view:payment_gateway.transaction:"
 msgid "Retry the trnsaction"
 msgstr "Transaktion wiederholen"
 
@@ -731,6 +811,10 @@ msgstr "Wiederholen"
 msgctxt "view:payment_gateway.transaction:"
 msgid "_Update Status"
 msgstr "Status aktualisieren"
+
+msgctxt "view:res.user:"
+msgid "Payment Gateways"
+msgstr "Zahlungsgateways"
 
 msgctxt "wizard_button:party.party.payment_profile.add,card_info,add:"
 msgid "Add"
