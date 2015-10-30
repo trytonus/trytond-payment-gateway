@@ -649,7 +649,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             method_name = 'update_%s' % transaction.gateway.provider
             if not hasattr(transaction, method_name):
                 cls.raise_user_error(
-                    'feature_not_available'
+                    'feature_not_available',
                     ('update status', transaction.gateway.provider)
                 )
             getattr(transaction, method_name)()
