@@ -3,18 +3,15 @@ import re
 from uuid import uuid4
 from decimal import Decimal
 from datetime import datetime
-from sql.functions import Trim, Substring
-from sql.operators import Concat
 
 import yaml
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, If, Bool, In, Equal
+from trytond.pyson import Eval, If, Bool
 from trytond.wizard import Wizard, StateView, StateTransition, \
     Button, StateAction
 from trytond.transaction import Transaction
 from trytond.exceptions import UserError
 from trytond.model import ModelSQL, ModelView, Workflow, fields
-from trytond import backend
 
 
 __all__ = [
@@ -234,23 +231,6 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         )
 
     @classmethod
-    def view_attributes(cls):
-        return super(PaymentTransaction, cls).view_attributes() + [(
-            '/tree', 'colors', If(
-                In(
-                    Eval('state', ''),
-                    ['in-progress', 'authorized', 'completed']
-                ),
-                'blue',
-                If(
-                    In(Eval('state', ''), ['failed', 'cancel']),
-                    'red',
-                    If(Equal(Eval('state', ''), 'posted'), 'green', 'black')
-                )
-            )
-        )]
-
-    @classmethod
     def _get_origin(cls):
         'Return list of Model names for origin Reference'
         return ['payment_gateway.transaction']
@@ -353,75 +333,6 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             ('kind', 'in', cls._credit_account_domain())
         ]
         cls.credit_account.depends += ['company']
-
-    @classmethod
-    def __register__(cls, module_name):
-        Party = Pool().get('party.party')
-        Model = Pool().get('ir.model')
-        ModelField = Pool().get('ir.model.field')
-        Property = Pool().get('ir.property')
-        PaymentProfile = Pool().get('party.payment_profile')
-        TableHandler = backend.get('TableHandler')
-        cursor = Transaction().cursor
-        table = TableHandler(cursor, cls, module_name)
-
-        migration_needed = False
-        if not table.column_exist('credit_account'):
-            migration_needed = True
-
-        migrate_last_four_digits = False
-        if not table.column_exist('last_four_digits'):
-            migrate_last_four_digits = True
-
-        super(PaymentTransaction, cls).__register__(module_name)
-
-        if migration_needed and not Pool.test:
-            # Migration
-            # Set party's receivable account as the credit_account on
-            # transactions
-            transaction = cls.__table__()
-            party = Party.__table__()
-            property = Property.__table__()
-
-            account_model, = Model.search([
-                ('model', '=', 'party.party'),
-            ])
-            account_receivable_field, = ModelField.search([
-                ('model', '=', account_model.id),
-                ('name', '=', 'account_receivable'),
-                ('ttype', '=', 'many2one'),
-            ])
-
-            update = transaction.update(
-                columns=[transaction.credit_account],
-                values=[
-                    Trim(
-                        Substring(property.value, ',.*'), 'LEADING', ','
-                    ).cast(cls.credit_account.sql_type().base)
-                ],
-                from_=[party, property],
-                where=(
-                    transaction.party == party.id
-                ) & (
-                    property.res == Concat(Party.__name__ + ',', party.id)
-                ) & (
-                    property.field == account_receivable_field.id
-                ) & (
-                    property.company == transaction.company
-                )
-
-            )
-            cursor.execute(*update)
-
-        if migrate_last_four_digits and not Pool.test:
-            transaction = cls.__table__()
-            payment_profile = PaymentProfile.__table__()
-            cursor.execute(*transaction.update(
-                columns=[transaction.last_four_digits],
-                values=[payment_profile.last_4_digits],
-                from_=[payment_profile],
-                where=(transaction.payment_profile == payment_profile.id)
-            ))
 
     @classmethod
     def _credit_account_domain(cls):
@@ -649,7 +560,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             method_name = 'update_%s' % transaction.gateway.provider
             if not hasattr(transaction, method_name):
                 cls.raise_user_error(
-                    'feature_not_available'
+                    'feature_not_available',
                     ('update status', transaction.gateway.provider)
                 )
             getattr(transaction, method_name)()
