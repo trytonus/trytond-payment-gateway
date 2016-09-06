@@ -828,18 +828,18 @@ class BaseCreditCardViewMixin(object):
             self.number = ''
             self.expiry_month = ''
             self.expiry_year = ''
+        else:
+            match = self.track1_re.match(track1)
+            if match:
+                # Track1 matched, extract info and send
+                assert match.group('FC').upper() == 'B', 'Unknown card Format Code'  # noqa
 
-        match = self.track1_re.match(track1)
-        if match:
-            # Track1 matched, extract info and send
-            assert match.group('FC').upper() == 'B', 'Unknown card Format Code'
+                self.owner = match.group('NAME')
+                self.number = match.group('PAN')
+                self.expiry_month = match.group('MM')
+                self.expiry_year = '20' + match.group('YY')
 
-            self.owner = match.group('NAME')
-            self.number = match.group('PAN')
-            self.expiry_month = match.group('MM')
-            self.expiry_year = '20' + match.group('YY')
-
-        # TODO: Match track 2
+            # TODO: Match track 2
 
 
 class Party:
