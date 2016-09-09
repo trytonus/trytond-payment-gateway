@@ -5,6 +5,7 @@ from decimal import Decimal
 from datetime import datetime
 
 import yaml
+from babel import numbers, dates
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval, If, Bool
 from trytond.wizard import Wizard, StateView, StateTransition, \
@@ -229,6 +230,34 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         return '%s/%s' % (
             self.payment_profile.rec_name, self.provider_reference
         )
+
+    def get_rec_blurb(self, name):
+        locale = Transaction().context.get('language', 'en_US') or 'en_US'
+        rv = {
+            'subtitle': [
+                ('Type', self.type),
+                ('Date', dates.format_date(
+                    self.date, 'short', locale=locale)),
+                ('Amount', numbers.format_currency(
+                    self.amount, currency=self.currency.code, locale=locale)),
+            ],
+            'description': ' | '.join(
+                filter(None, [
+                    self.description,
+                    self.payment_profile.rec_name,
+                    self.party.rec_name
+                ])
+            ),
+        }
+        if self.payment_profile:
+            rv['title'] = '%s | %s' % (
+                self.payment_profile.rec_name, self.provider_reference
+            )
+        else:
+            rv['title'] = '%s | %s' % (
+                self.gateway.name, self.provider_reference
+            )
+        return rv
 
     @classmethod
     def _get_origin(cls):
