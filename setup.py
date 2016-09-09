@@ -50,6 +50,7 @@ minor_version = int(minor_version)
 
 requires = [
     'pyyaml',
+    'babel',
 ]
 
 MODULE = 'payment_gateway'
