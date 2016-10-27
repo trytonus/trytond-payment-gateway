@@ -336,7 +336,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'post': {
                 'invisible': ~(
                     (Eval('state') == 'completed') &
-                    (Eval('type') == 'charge')
+                    (Eval('type').in_(['charge', 'refund']))
                 )
             },
             'use_card': {
@@ -724,6 +724,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         refund_transaction.type = 'refund'
         refund_transaction.amount = amount or self.amount
         refund_transaction.origin = self
+        refund_transaction.date = self.default_date()
         refund_transaction.save()
 
         return refund_transaction
