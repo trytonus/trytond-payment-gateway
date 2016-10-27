@@ -68,6 +68,12 @@
             <field name="view" ref="transaction_view_form"/>
             <field name="act_window" ref="act_transaction"/>
         </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_all">
+            <field name="name">All</field>
+            <field name="sequence" eval="5"/>
+            <field name="domain"></field>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
         <record model="ir.action.act_window.domain" id="act_transaction_domain_draft">
             <field name="name">Draft</field>
             <field name="sequence" eval="10"/>
@@ -90,12 +96,6 @@
             <field name="name">Authorized</field>
             <field name="sequence" eval="40"/>
             <field name="domain" eval="[('state', '=', 'authorized')]" pyson="1"/>
-            <field name="act_window" ref="act_transaction"/>
-        </record>
-        <record model="ir.action.act_window.domain" id="act_transaction_domain_all">
-            <field name="name">All</field>
-            <field name="sequence" eval="50"/>
-            <field name="domain"></field>
             <field name="act_window" ref="act_transaction"/>
         </record>
         <menuitem parent="account.menu_entries"
