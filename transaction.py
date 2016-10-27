@@ -119,6 +119,8 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             ('charge', 'Charge'),
             ('refund', 'Refund'),
         ], 'Type', required=True, select=True,
+        states=READONLY_IF_NOT_DRAFT,
+        depends=['state']
     )
     origin = fields.Reference(
         'Origin', selection='get_origin', select=True,
