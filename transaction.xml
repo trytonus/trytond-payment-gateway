@@ -68,6 +68,12 @@
             <field name="view" ref="transaction_view_form"/>
             <field name="act_window" ref="act_transaction"/>
         </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_all">
+            <field name="name">All</field>
+            <field name="sequence" eval="5"/>
+            <field name="domain"></field>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
         <record model="ir.action.act_window.domain" id="act_transaction_domain_draft">
             <field name="name">Draft</field>
             <field name="sequence" eval="10"/>
@@ -80,22 +86,34 @@
             <field name="domain" eval="[('state', '=', 'in-progress')]" pyson="1"/>
             <field name="act_window" ref="act_transaction"/>
         </record>
-        <record model="ir.action.act_window.domain" id="act_transaction_domain_failed">
-            <field name="name">Failed</field>
-            <field name="sequence" eval="30"/>
-            <field name="domain" eval="[('state', '=', 'failed')]" pyson="1"/>
-            <field name="act_window" ref="act_transaction"/>
-        </record>          
         <record model="ir.action.act_window.domain" id="act_transaction_domain_authorized">
             <field name="name">Authorized</field>
             <field name="sequence" eval="40"/>
             <field name="domain" eval="[('state', '=', 'authorized')]" pyson="1"/>
             <field name="act_window" ref="act_transaction"/>
         </record>
-        <record model="ir.action.act_window.domain" id="act_transaction_domain_all">
-            <field name="name">All</field>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_completed">
+            <field name="name">Completed</field>
             <field name="sequence" eval="50"/>
-            <field name="domain"></field>
+            <field name="domain" eval="[('state', '=', 'completed')]" pyson="1"/>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_posted">
+            <field name="name">Posted</field>
+            <field name="sequence" eval="60"/>
+            <field name="domain" eval="[('state', '=', 'posted')]" pyson="1"/>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_cancel">
+            <field name="name">Cancelled</field>
+            <field name="sequence" eval="70"/>
+            <field name="domain" eval="[('state', '=', 'cancel')]" pyson="1"/>
+            <field name="act_window" ref="act_transaction"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_transaction_domain_failed">
+            <field name="name">Failed</field>
+            <field name="sequence" eval="80"/>
+            <field name="domain" eval="[('state', '=', 'failed')]" pyson="1"/>
             <field name="act_window" ref="act_transaction"/>
         </record>
         <menuitem parent="account.menu_entries"
