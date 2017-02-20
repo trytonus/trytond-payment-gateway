@@ -92,6 +92,35 @@ class TestTransaction(ModuleTestCase):
         create_chart.properties.account_payable = payable
         create_chart.transition_create_properties()
 
+    @with_transaction()
+    def test_payment_transaction_search_rec_name(self):
+        """
+        Search payment transaction with UUID
+        """
+        self.setup_defaults()
+
+        gateway, = self.PaymentGateway.create([{
+            'name': 'Test Gateway',
+            'journal': self.cash_journal.id,
+            'provider': 'self',
+            'method': 'manual',
+        }])
+
+        with Transaction().set_context(company=self.company.id):
+            transaction, = self.PaymentGatewayTransaction.create([{
+                'party': self.party.id,
+                'credit_account': self.party.account_receivable.id,
+                'address': self.party.addresses[0].id,
+                'gateway': gateway.id,
+                'amount': 400,
+            }])
+
+        self.assertTrue(
+            self.PaymentGatewayTransaction.search(
+                [('rec_name', 'ilike', '%' + transaction.uuid + '%')]
+            )
+        )
+
     def _get_account_by_kind(self, kind, company=None, silent=True):
         """Returns an account with given spec
 
