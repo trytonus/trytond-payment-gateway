@@ -217,6 +217,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     )
     last_four_digits = fields.Char('Last Four Digits')
 
+    @classmethod
+    def search_rec_name(cls, name, clause):
+        res = super(PaymentTransaction, cls).search_rec_name(name, clause)
+        res.append(('uuid',) + tuple(clause[1:]))
+        return res
+
     @staticmethod
     def default_type():
         return 'charge'
