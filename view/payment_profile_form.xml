@@ -9,6 +9,8 @@ this repository contains the full copyright notices and license terms. -->
     <separator string="Party Details" id="party_details" colspan="4" />
     <label name="party" />
     <field name="party" />
+    <label name="name" />
+    <field name="name" />
     <newline />
     <label name="address" />
     <field name="address" />

@@ -217,6 +217,12 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
     )
     last_four_digits = fields.Char('Last Four Digits')
 
+    @classmethod
+    def search_rec_name(cls, name, clause):
+        res = super(PaymentTransaction, cls).search_rec_name(name, clause)
+        res.append(('uuid',) + tuple(clause[1:]))
+        return res
+
     @staticmethod
     def default_type():
         return 'charge'
@@ -922,6 +928,7 @@ class PaymentProfile(ModelSQL, ModelView):
 
     sequence = fields.Integer('Sequence', required=True)
     party = fields.Many2One('party.party', 'Party', required=True)
+    name = fields.Char('Cardholder name')  # Make required later
     address = fields.Many2One(
         'party.address', 'Address', required=True,
         domain=[('party', '=', Eval('party'))], depends=['party']
@@ -1053,6 +1060,7 @@ class AddPaymentProfile(Wizard):
         Profile = Pool().get('party.payment_profile')
 
         profile = Profile(
+            name=self.card_info.owner,
             party=self.card_info.party.id,
             address=self.card_info.address.id,
             gateway=self.card_info.gateway.id,
