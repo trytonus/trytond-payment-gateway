@@ -990,6 +990,7 @@ class AddPaymentProfileView(BaseCreditCardViewMixin, ModelView):
     )
     gateway = fields.Many2One(
         'payment_gateway.gateway', 'Gateway', required=True,
+        domain=[('method', '!=', 'manual')],
     )
 
 
