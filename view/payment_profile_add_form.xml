@@ -6,8 +6,6 @@ this repository contains the full copyright notices and license terms. -->
     <field name="party"/>
     <label name="address"/>
     <field name="address"/>
-    <label name="provider"/>
-    <field name="provider"/>
     <label name="gateway"/>
     <field name="gateway"/>
     <newline/>

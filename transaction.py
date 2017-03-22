@@ -994,19 +994,10 @@ class AddPaymentProfileView(BaseCreditCardViewMixin, ModelView):
         domain=[('party', '=', Eval('party'))],
         depends=['party']
     )
-    provider = fields.Selection('get_providers', 'Provider', required=True)
     gateway = fields.Many2One(
         'payment_gateway.gateway', 'Gateway', required=True,
-        domain=[('provider', '=', Eval('provider'))],
-        depends=['provider']
+        domain=[('method', '!=', 'manual')],
     )
-
-    @classmethod
-    def get_providers(cls):
-        """
-        Return the list of providers who support credit card profiles.
-        """
-        return []
 
 
 class AddPaymentProfile(Wizard):
@@ -1097,7 +1088,7 @@ class AddPaymentProfile(Wizard):
         If return_profile is set to True in the context, then the created
         profile is returned.
         """
-        method_name = 'transition_add_%s' % self.card_info.provider
+        method_name = 'transition_add_%s' % self.card_info.gateway.provider
         if Transaction().context.get('return_profile'):
             return getattr(self, method_name)()
         else:
