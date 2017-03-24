@@ -686,6 +686,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'credit': Decimal('0.0') if refund else amount,
             'amount_second_currency': amount_second_currency,
             'second_currency': second_currency,
+            'maturity_date': date,
         }, {
             'description': self.rec_name,
             'account': journal.debit_account.id,
