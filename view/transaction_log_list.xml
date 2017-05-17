@@ -3,5 +3,5 @@
 this repository contains the full copyright notices and license terms. -->
 <tree string="Transaction Logs">
     <field name="timestamp" widget="date"/>
-    <field name="transaction"/>
+    <field name="log"/>
 </tree>
