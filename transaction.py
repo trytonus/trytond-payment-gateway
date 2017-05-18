@@ -972,7 +972,7 @@ class PaymentProfile(ModelSQL, ModelView):
 
     def get_rec_name(self, name=None):
         if self.last_4_digits:
-            return self.gateway.name + ' ' + ('xxxx ' * 3) + self.last_4_digits
+            return ' '.join([self.gateway.name, 'xxxx', self.last_4_digits])
         return 'Incomplete Card'
 
     @staticmethod
