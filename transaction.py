@@ -684,8 +684,6 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'party': self.party.id,
             'debit': Decimal('0.0') if not refund else amount,
             'credit': Decimal('0.0') if refund else amount,
-            'amount_second_currency': amount_second_currency,
-            'second_currency': second_currency,
             'maturity_date': date,
         }
         if second_currency and \
@@ -701,8 +699,6 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'account': journal.debit_account.id,
             'debit': Decimal('0.0') if refund else amount,
             'credit': Decimal('0.0') if not refund else amount,
-            'amount_second_currency': amount_second_currency,
-            'second_currency': second_currency,
         }
         if second_currency and \
                 second_currency == journal.debit_account.second_currency:
