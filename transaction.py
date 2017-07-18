@@ -678,7 +678,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             second_currency = self.currency
 
         refund = self.type == 'refund'
-        lines = [{
+        ar_line = {
             'description': self.rec_name,
             'account': self.credit_account.id,
             'party': self.party.id,
@@ -687,14 +687,32 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'amount_second_currency': amount_second_currency,
             'second_currency': second_currency,
             'maturity_date': date,
-        }, {
+        }
+        if second_currency and \
+                second_currency == self.credit_account.second_currency:
+            ar_line['second_currency'] = second_currency
+            if ar_line['debit']:
+                ar_line['amount_second_currency'] = amount_second_currency
+            else:
+                ar_line['amount_second_currency'] = -amount_second_currency
+
+        gw_line = {
             'description': self.rec_name,
             'account': journal.debit_account.id,
             'debit': Decimal('0.0') if refund else amount,
             'credit': Decimal('0.0') if not refund else amount,
             'amount_second_currency': amount_second_currency,
             'second_currency': second_currency,
-        }]
+        }
+        if second_currency and \
+                second_currency == journal.debit_account.second_currency:
+            gw_line['second_currency'] = second_currency
+            if gw_line['debit']:
+                gw_line['amount_second_currency'] = amount_second_currency
+            else:
+                gw_line['amount_second_currency'] = -amount_second_currency
+
+        lines = [ar_line, gw_line]
 
         move, = Move.create([{
             'journal': journal.id,
