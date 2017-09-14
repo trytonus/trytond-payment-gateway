@@ -95,7 +95,7 @@ class TestTransaction(ModuleTestCase):
     @with_transaction()
     def test_payment_transaction_search_rec_name(self):
         """
-        Search payment transaction with UUID
+        Search payment transaction with UUID and Customer Name
         """
         self.setup_defaults()
 
@@ -116,9 +116,10 @@ class TestTransaction(ModuleTestCase):
             }])
 
         self.assertTrue(
-            self.PaymentGatewayTransaction.search(
-                [('rec_name', 'ilike', '%' + transaction.uuid + '%')]
-            )
+            self.PaymentGatewayTransaction.search([
+                ('rec_name', 'ilike', '%' + transaction.uuid + '%'),
+                ('rec_name', 'ilike', '%' + transaction.party.name + '%')
+            ])
         )
 
     def _get_account_by_kind(self, kind, company=None, silent=True):

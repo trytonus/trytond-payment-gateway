@@ -219,9 +219,11 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
 
     @classmethod
     def search_rec_name(cls, name, clause):
-        res = super(PaymentTransaction, cls).search_rec_name(name, clause)
-        res.append(('uuid',) + tuple(clause[1:]))
-        return res
+        return [
+            'OR',
+            [('uuid',) + tuple(clause[1:])],
+            [('party',) + tuple(clause[1:])],
+        ]
 
     @staticmethod
     def default_type():
