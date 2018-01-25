@@ -660,9 +660,10 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
         Currency = Pool().get('currency.currency')
         Period = Pool().get('account.period')
         Move = Pool().get('account.move')
+        Date = Pool().get('ir.date')
 
         journal = self.gateway.journal
-        date = date or self.date
+        date = date or Date.today()
 
         if not journal.debit_account:
             self.raise_user_error('missing_debit_account', (journal.rec_name,))
