@@ -583,7 +583,7 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             method_name = 'refund_%s' % transaction.gateway.provider
             if not hasattr(transaction, method_name):
                 cls.raise_user_error(
-                    'feature_not_available'
+                    'feature_not_available',
                     ('refund', transaction.gateway.provider)
                 )
             getattr(transaction, method_name)()
@@ -688,27 +688,21 @@ class PaymentTransaction(Workflow, ModelSQL, ModelView):
             'debit': Decimal('0.0') if not refund else amount,
             'credit': Decimal('0.0') if refund else amount,
             'maturity_date': date,
+            'second_currency': second_currency,
         }
-        if second_currency and \
-                second_currency == self.credit_account.second_currency:
-            ar_line['second_currency'] = second_currency
-            if ar_line['debit']:
-                ar_line['amount_second_currency'] = amount_second_currency
-            else:
-                ar_line['amount_second_currency'] = -amount_second_currency
-
         gw_line = {
             'description': self.rec_name,
             'account': journal.debit_account.id,
             'debit': Decimal('0.0') if refund else amount,
             'credit': Decimal('0.0') if not refund else amount,
+            'second_currency': second_currency,
         }
-        if second_currency and \
-                second_currency == journal.debit_account.second_currency:
-            gw_line['second_currency'] = second_currency
+        if second_currency:
             if gw_line['debit']:
+                ar_line['amount_second_currency'] = -amount_second_currency
                 gw_line['amount_second_currency'] = amount_second_currency
             else:
+                ar_line['amount_second_currency'] = amount_second_currency
                 gw_line['amount_second_currency'] = -amount_second_currency
 
         lines = [ar_line, gw_line]
